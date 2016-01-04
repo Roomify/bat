@@ -296,9 +296,6 @@ abstract class AbstractCalendar implements CalendarInterface {
       $start_event = NULL;
       $end_event = NULL;
       $event_value = NULL;
-      $last_day = NULL;
-      $last_hour = NULL;
-      $last_minute = NULL;
 
       foreach ($data[Event::BAT_DAY] as $year => $months) {
         // Make sure months are in right order
@@ -407,16 +404,13 @@ abstract class AbstractCalendar implements CalendarInterface {
   }
 
   /**
-   * A simple utility funciton that given an array of datum=>value will group results based on
+   * A simple utility function that given an array of datum=>value will group results based on
    * those that have the same value. Useful for grouping events based on state.
    *
    * @param $data
    * @param $length
    */
   public function groupData($data, $length) {
-    // Given an array of the structure $date => $value we create another array
-    // of structure $event, $length, $value
-    // Cycle through day data and create events
     $flipped = array();
     $e = 0;
     $j = 0;
