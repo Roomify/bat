@@ -77,8 +77,6 @@ abstract class AbstractCalendar implements CalendarInterface {
    * @return array
    */
   public function getEvents(\DateTime $start_date, \DateTime $end_date) {
-    $events = array();
-
     // We first get events in the itemized format
     $itemized_events = $this->getEventsItemized($start_date, $end_date);
 
