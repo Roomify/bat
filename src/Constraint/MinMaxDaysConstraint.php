@@ -7,12 +7,14 @@
 
 namespace Roomify\Bat\Constraint;
 
-use Rooimfy\Bat\Constraint;
+use Roomify\Bat\Constraint;
 
 /**
+ * Checks that a request is at least a set number of days and does not exceed a
+ * set number of days.
  *
  */
-class MinMaxConstraint extends Constraint {
+class MinMaxDaysConstraint extends Constraint {
 
   /**
    * @var int
