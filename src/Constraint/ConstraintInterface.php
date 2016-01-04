@@ -7,15 +7,19 @@
 
 namespace Roomify\Bat\Constraint;
 
+use Roomify\Bat\Calendar\CalendarResponse;
+
 /**
  * The Constraint Interface
  */
 interface ConstraintInterface {
 
   /**
+   * Applies the Constraint to a Calendar Response.
+   *
    * @param $calendar_response
    */
-  public function applyConstraint(&$calendar_response);
+  public function applyConstraint(CalendarResponse &$calendar_response);
 
   /**
    * @param $start_date
