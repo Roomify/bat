@@ -9,7 +9,8 @@
 
 BAT stands for Booking and Availability Management Tools.
 
-It is a set of tools created by the [Roomify.us](https://roomify.us) team to provide a foundation through which a wide range of availability management, reservation and booking use cases can be addressed. BAT will work with both Drupal 7 and Drupal 8.
+It is a set of tools created by the [Roomify.us](https://roomify.us) team to provide a foundation through which a wide range of availability management, reservation and booking use cases can be addressed.
+BAT will work with a variety of CMSs of which the first is Drupal (check out our [Drupal module](https://github.com/roomify/bat_drupal)).
 
 BAT builds on our experience with [Rooms](http://drupal.org/project/rooms), which handles the problem of bookings specifically for the accommodation for rental use case(vacation rentals, hotels, B&B, etc).
 
