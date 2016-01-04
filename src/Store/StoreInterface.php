@@ -7,7 +7,7 @@
 
 namespace Roomify\Bat\Store;
 
-use Roomify\Bat\Event;
+use Roomify\Bat\Event\Event;
 
 /**
  * A store is a place where event data is held. The purpose of separating these

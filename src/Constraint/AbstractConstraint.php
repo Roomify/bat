@@ -7,7 +7,7 @@
 
 namespace Roomify\Bat\Constraint;
 
-use Roomify\Bat\ConstraintInterface;
+use Roomify\Bat\Constraint\ConstraintInterface;
 
 /**
  * A constraint acts as a filter that can be applied to a Calendar Response to

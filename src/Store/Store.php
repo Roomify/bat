@@ -7,7 +7,7 @@
 
 namespace Roomify\Bat\Store;
 
-use Roomify\Bat\StoreInterface;
+use Roomify\Bat\Store\StoreInterface;
 
 /**
  * The basic Store class

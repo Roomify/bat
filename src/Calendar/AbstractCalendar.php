@@ -5,7 +5,7 @@
  * Class AbstractCalendar
  */
 
-namespace Roomify\Bat\Calendar\AbstractCalendar;
+namespace Roomify\Bat\Calendar;
 
 use Roomify\Bat\Event\Event;
 use Roomify\Bat\Calendar\CalendarInterface;

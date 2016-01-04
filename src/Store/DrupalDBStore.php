@@ -5,7 +5,10 @@
  * Class DrupalDBStore
  */
 
-namespace Drupal\bat;
+namespace Roomify\Bat\Store;
+
+use Roomify\Bat\Event\Event;
+use Roomify\Bat\Store\Store;
 
 /**
  * This is a Drupal-specific implementation of the Store.
@@ -127,7 +130,7 @@ class DrupalDBStore extends Store {
    *
    * @return bool
    */
-  public function storeEvent(Event $event, $granularity = BAT_HOURLY) {
+  public function storeEvent(Event $event, $granularity = Event::BAT_HOURLY) {
     $stored = TRUE;
     $transaction = db_transaction();
 
@@ -136,7 +139,7 @@ class DrupalDBStore extends Store {
       $itemized = $event->itemizeEvent($granularity);
 
       //Write days
-      foreach ($itemized[BAT_DAY] as $year => $months) {
+      foreach ($itemized[Event::BAT_DAY] as $year => $months) {
         foreach ($months as $month => $days) {
           db_merge($this->day_table)
             ->key(array(
@@ -149,9 +152,9 @@ class DrupalDBStore extends Store {
         }
       }
 
-      if ($granularity == BAT_HOURLY) {
+      if ($granularity == Event::BAT_HOURLY) {
         // Write Hours
-        foreach ($itemized[BAT_HOUR] as $year => $months) {
+        foreach ($itemized[Event::BAT_HOUR] as $year => $months) {
           foreach ($months as $month => $days) {
             foreach ($days as $day => $hours) {
               // Count required as we may receive empty hours for granular events that start and end on midnight
@@ -171,7 +174,7 @@ class DrupalDBStore extends Store {
         }
 
         //If we have minutes write minutes
-        foreach ($itemized[BAT_MINUTE] as $year => $months) {
+        foreach ($itemized[Event::BAT_MINUTE] as $year => $months) {
           foreach ($months as $month => $days) {
             foreach ($days as $day => $hours) {
               foreach ($hours as $hour => $minutes) {
@@ -222,7 +225,7 @@ class DrupalDBStore extends Store {
     // We don't need a granular event even if we are retrieving granular data - since we don't
     // know what the event break-down is going to be we need to get the full range of data from
     // days, hours and minutes.
-    $itemized = $mock_event->itemizeEvent(BAT_DAILY);
+    $itemized = $mock_event->itemizeEvent(Event::BAT_DAILY);
 
     $year_count = 0;
     $hour_count = 0;
@@ -230,7 +233,7 @@ class DrupalDBStore extends Store {
 
     $query_parameters = '';
 
-    foreach($itemized[BAT_DAY] as $year => $months) {
+    foreach($itemized[Event::BAT_DAY] as $year => $months) {
       if ($year_count > 0) {
         // We are dealing with multiple years so add an OR
         $query_parameters .= ' OR ';

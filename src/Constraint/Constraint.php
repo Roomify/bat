@@ -7,7 +7,7 @@
 
 namespace Roomify\Bat\Constraint;
 
-use Roomify\Bat\ConstraintInterface;
+use Roomify\Bat\Constraint\ConstraintInterface;
 
 
 /**

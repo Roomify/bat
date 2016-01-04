@@ -7,7 +7,7 @@
 
 namespace Roomify\Bat\Calendar;
 
-use Roomify\Bat\Store\Store;
+use Roomify\Bat\Calendar\AbstractCalendar;
 
 /**
  * Handles querying and updating the availability information

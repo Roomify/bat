@@ -7,7 +7,7 @@
 
 namespace Roomify\Bat\Event;
 
-use Roomify\Bat\EventInterface;
+use Roomify\Bat\Event\EventInterface;
 
 abstract class AbstractEvent implements EventInterface {
 
@@ -401,9 +401,9 @@ abstract class AbstractEvent implements EventInterface {
       if (!($this->end_date->format('H:i') == '23:59')) {
         $period = new \DatePeriod($start_date, $interval, $end_date->add(new \DateInterval('PT1M')));
         $itemized_same_day = $this->createHourlyGranular($period, $start_date);
-        $itemized[BAT_DAY][$sy][$sm]['d' . $sd] = -1;
-        $itemized[BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_same_day[BAT_HOUR][$sy][$sm]['d' . $sd];
-        $itemized[BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_same_day[BAT_MINUTE][$sy][$sm]['d' . $sd];
+        $itemized[AbstractEvent::BAT_DAY][$sy][$sm]['d' . $sd] = -1;
+        $itemized[AbstractEvent::BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_same_day[AbstractEvent::BAT_HOUR][$sy][$sm]['d' . $sd];
+        $itemized[AbstractEvent::BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_same_day[AbstractEvent::BAT_MINUTE][$sy][$sm]['d' . $sd];
       }
     }
     else {
@@ -411,21 +411,21 @@ abstract class AbstractEvent implements EventInterface {
       if (!($this->start_date->format('H:i') == '00:00')) {
         $start_period = new \DatePeriod($start_date, $interval, new \DateTime($start_date->format("Y-n-j 23:59:59")));
         $itemized_start = $this->createHourlyGranular($start_period, $start_date);
-        $itemized[BAT_DAY][$sy][$sm]['d' . $sd] = -1;
-        $itemized[BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_start[BAT_HOUR][$sy][$sm]['d' . $sd];
-        $itemized[BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_start[BAT_MINUTE][$sy][$sm]['d' . $sd];
+        $itemized[AbstractEvent::BAT_DAY][$sy][$sm]['d' . $sd] = -1;
+        $itemized[AbstractEvent::BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_start[AbstractEvent::BAT_HOUR][$sy][$sm]['d' . $sd];
+        $itemized[AbstractEvent::BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_start[AbstractEvent::BAT_MINUTE][$sy][$sm]['d' . $sd];
       }
       else {
         // Just set an empty hour and minute
-        $itemized[BAT_HOUR][$sy][$sm]['d' . $sd] = array();
-        $itemized[BAT_MINUTE][$sy][$sm]['d' . $sd] = array();
+        $itemized[AbstractEvent::BAT_HOUR][$sy][$sm]['d' . $sd] = array();
+        $itemized[AbstractEvent::BAT_MINUTE][$sy][$sm]['d' . $sd] = array();
       }
       // Deal with the end date unless it ends on midnight precisely at which point the day does not count
       $end_period = new \DatePeriod(new \DateTime($end_date->format("Y-n-j 00:00:00")), $interval, $end_date->add(new \DateInterval('PT1M')));
       $itemized_end = $this->createHourlyGranular($end_period, new \DateTime($end_date->format("Y-n-j 00:00:00")));
-      $itemized[BAT_DAY][$ey][$em]['d' . $ed] = -1;
-      $itemized[BAT_HOUR][$ey][$em]['d' . $ed] = $itemized_end[BAT_HOUR][$ey][$em]['d' . $ed];
-      $itemized[BAT_MINUTE][$ey][$em]['d' . $ed] = $itemized_end[BAT_MINUTE][$ey][$em]['d' . $ed];
+      $itemized[AbstractEvent::BAT_DAY][$ey][$em]['d' . $ed] = -1;
+      $itemized[AbstractEvent::BAT_HOUR][$ey][$em]['d' . $ed] = $itemized_end[AbstractEvent::BAT_HOUR][$ey][$em]['d' . $ed];
+      $itemized[AbstractEvent::BAT_MINUTE][$ey][$em]['d' . $ed] = $itemized_end[AbstractEvent::BAT_MINUTE][$ey][$em]['d' . $ed];
     }
 
     return $itemized;
@@ -446,9 +446,9 @@ abstract class AbstractEvent implements EventInterface {
     $start_minute = $counter;
     foreach($period as $minute) {
       // Doing minutes so set the values in the minute array
-      $itemized[BAT_MINUTE][$minute->format('Y')][$minute->format('n')]['d'. $minute->format('j')]['h'. $minute->format('G')]['m' .$minute->format('i')] = $this->getValue();
+      $itemized[AbstractEvent::BAT_MINUTE][$minute->format('Y')][$minute->format('n')]['d'. $minute->format('j')]['h'. $minute->format('G')]['m' .$minute->format('i')] = $this->getValue();
       // Let the hours know that it cannot determine availability
-      $itemized[BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d'. $minute->format('j')]['h'. $minute->format('G')] = -1;
+      $itemized[AbstractEvent::BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d'. $minute->format('j')]['h'. $minute->format('G')] = -1;
       $counter++;
 
       if ($counter == 60 && $start_minute!==0) {
@@ -458,9 +458,9 @@ abstract class AbstractEvent implements EventInterface {
       }
       elseif ($counter == 60 && $start_minute == 0) {
         // Did a real whole hour so initialize the hour
-        $itemized[BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')] = $this->getValue();
+        $itemized[AbstractEvent::BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')] = $this->getValue();
         // We have a whole hour so get rid of the minute info
-        unset($itemized[BAT_MINUTE][$minute->format('Y')][$minute->format('n')]['d'. $minute->format('j')]['h'. $minute->format('G')]);
+        unset($itemized[AbstractEvent::BAT_MINUTE][$minute->format('Y')][$minute->format('n')]['d'. $minute->format('j')]['h'. $minute->format('G')]);
         $counter = 0;
         $start_minute = 0;
       }
@@ -474,7 +474,7 @@ abstract class AbstractEvent implements EventInterface {
    *
    * @return array
    */
-  public function itemizeEvent($granularity = BAT_HOURLY) {
+  public function itemizeEvent($granularity = AbstractEvent::BAT_HOURLY) {
     // The largest interval we deal with are months (a row in the *_state/*_event tables)
     $interval = new \DateInterval('P1M');
 
@@ -502,7 +502,7 @@ abstract class AbstractEvent implements EventInterface {
           $dayrange = new \DatePeriod($this->start_date, $dayinterval, $this->endMonthDate($this->start_date));
         }
         foreach ($dayrange as $day) {
-          $itemized[BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
+          $itemized[AbstractEvent::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
         }
       }
 
@@ -510,7 +510,7 @@ abstract class AbstractEvent implements EventInterface {
       elseif ($this->isLastMonth($date)) {
         $dayrange = new \DatePeriod(new \DateTime($date->format("Y-n-1")), $dayinterval, $this->end_date);
         foreach ($dayrange as $day) {
-          $itemized[BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
+          $itemized[AbstractEvent::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
         }
       }
 
@@ -518,12 +518,12 @@ abstract class AbstractEvent implements EventInterface {
       else {
         $dayrange = new \DatePeriod(new \DateTime($date->format("Y-n-1")), $dayinterval, new \DateTime($date->format("Y-n-t 23:59:59")));
         foreach ($dayrange as $day) {
-          $itemized[BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
+          $itemized[AbstractEvent::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
         }
       }
     }
 
-    if ($granularity == BAT_HOURLY) {
+    if ($granularity == AbstractEvent::BAT_HOURLY) {
       // Add granural info in
       $itemized = $this->createDayGranural($itemized);
     }
@@ -540,7 +540,7 @@ abstract class AbstractEvent implements EventInterface {
    * @throws \Exception
    * @throws \InvalidMergeQueryException
    */
-  public function saveEvent(Store $store, $granularity = BAT_HOURLY) {
+  public function saveEvent(Store $store, $granularity = AbstractEvent::BAT_HOURLY) {
     return $store->storeEvent($this, $granularity);
   }
 
