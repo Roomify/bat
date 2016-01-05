@@ -6,6 +6,7 @@ use Roomify\Bat\Unit\Unit;
 use Roomify\Bat\Event\Event;
 use Roomify\Bat\Calendar\Calendar;
 
+use Roomify\Bat\Store\JsonStore;
 
 class CalendarTest extends \PHPUnit_Extensions_Database_TestCase {
 
@@ -33,20 +34,31 @@ class CalendarTest extends \PHPUnit_Extensions_Database_TestCase {
   public function testCalendar() {
     $start_date = new \DateTime('2016-01-01 12:12');
     $end_date = new \DateTime('2016-01-10 07:07');
-    $state_store = new DrupalDBStore('availability_event', DrupalDBStore::BAT_STATE);
-    $valid_states = array(5);
+
+    $state_store = new JsonStore('availability_event', JsonStore::BAT_STATE);
+    $event_store = new JsonStore('availability_event', JsonStore::BAT_EVENT);
+
+    $valid_states = array(0, 2, 4, 5);
 
     $unit1 = new Unit(1, 2, array());
     $unit2 = new Unit(2, 2, array());
 
-    $units = array($unit1, $unit2);
+    $units = array($unit1);
 
-    $calendar = new Calendar($units, $state_store);
+    $state_calendar = new Calendar($units, $state_store);
+    $event_calendar = new Calendar($units, $event_store);
+
+    $state_event = new Event($start_date, $end_date, $unit1->getUnitId(), 4);
+    $event_id_event = new Event($start_date, $end_date, $unit1->getUnitId(), 2);
+
+    $state_calendar->addEvents(array($state_event), Event::BAT_HOURLY);
+    $event_calendar->addEvents(array($event_id_event), Event::BAT_HOURLY);
 
     $constraints = array();
 
-    //$response = $calendar->getMatchingUnits($start_date, $end_date, $valid_states, $constraints);
-    //$valid_unit_ids = array_keys($response->getIncluded());
+    $response = $state_calendar->getMatchingUnits($start_date, $end_date, $valid_states, $constraints);
+    $valid_unit_ids = array_keys($response->getIncluded());
+    var_dump($valid_unit_ids);
   }
 
 }
