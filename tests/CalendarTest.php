@@ -3,14 +3,29 @@
 namespace Roomify\Bat\Test;
 
 use Roomify\Bat\Unit\Unit;
-
 use Roomify\Bat\Event\Event;
-
 use Roomify\Bat\Calendar\Calendar;
 
-use Roomify\Bat\Store\DrupalDBStore;
 
-class CalendarTest extends \PHPUnit_Framework_TestCase {
+class CalendarTest extends \PHPUnit_Extensions_Database_TestCase {
+
+  /**
+   * @return PHPUnit_Extensions_Database_DB_IDatabaseConnection
+   */
+  public function getConnection()
+  {
+    $pdo = new \PDO('sqlite::memory:');
+    return $this->createDefaultDBConnection($pdo, ':memory:');
+  }
+
+  /**
+   * @return PHPUnit_Extensions_Database_DataSet_IDataSet
+   */
+  public function getDataSet()
+  {
+    return $this->createMySQLXMLDataSet(dirname(__FILE__).'/_files/events.xml');
+  }
+
 
   /**
    * Test Calendar.
