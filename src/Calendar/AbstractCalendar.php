@@ -22,7 +22,7 @@ abstract class AbstractCalendar implements CalendarInterface {
    *
    * @var array
    */
-  public $units;
+  protected $units;
 
 
   /**
@@ -30,7 +30,7 @@ abstract class AbstractCalendar implements CalendarInterface {
    *
    * @var
    */
-  public $store;
+  protected $store;
 
   /**
    * The default value for events. In the event store this is represented by 0 which is then
@@ -38,7 +38,7 @@ abstract class AbstractCalendar implements CalendarInterface {
    *
    * @var
    */
-  public $default_value;
+  protected $default_value;
 
 
   /**

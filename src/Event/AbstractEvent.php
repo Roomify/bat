@@ -21,21 +21,21 @@ abstract class AbstractEvent implements EventInterface {
    * The booking unit the event is relevant to
    * @var int
    */
-  public $unit_id;
+  protected $unit_id;
 
   /**
    * The start date for the event.
    *
    * @var DateTime
    */
-  public $start_date;
+  protected $start_date;
 
   /**
    * The end date for the event.
    *
    * @var DateTime
    */
-  public $end_date;
+  protected $end_date;
 
   /**
    * The value associated with this event.
@@ -43,7 +43,7 @@ abstract class AbstractEvent implements EventInterface {
    *
    * @var int
    */
-  public $value;
+  protected $value;
 
   /**
    * Returns the value.

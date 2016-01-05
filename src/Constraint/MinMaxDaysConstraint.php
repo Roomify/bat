@@ -19,17 +19,17 @@ class MinMaxDaysConstraint extends Constraint {
   /**
    * @var int
    */
-  public $min_days = 0;
+  protected $min_days = 0;
 
   /**
    * @var int
    */
-  public $max_days = 0;
+  protected $max_days = 0;
 
   /**
    * @var int
    */
-  public $checkin_day = NULL;
+  protected $checkin_day = NULL;
 
   /**
    * @param $min_days

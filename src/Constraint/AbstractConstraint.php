@@ -19,32 +19,32 @@ abstract class AbstractConstraint implements ConstraintInterface {
   /**
    * @var DateTime
    */
-  public $start_date;
+  protected $start_date;
 
   /**
    * @var DateTime
    */
-  public $end_date;
+  protected $end_date;
 
   /**
    * @var array
    */
-  public $valid_states;
+  protected $valid_states;
 
   /**
    * @var array
    */
-  public $affected_units;
+  protected $affected_units;
 
   /**
    * @var CalendarResponse
    */
-  public $calendar_response;
+  protected $calendar_response;
 
   /**
    * @var array
    */
-  public $units = array();
+  protected $units = array();
 
   /**
    * {@inheritdoc}

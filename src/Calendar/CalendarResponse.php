@@ -23,27 +23,27 @@ class CalendarResponse {
   /**
    * @var array
    */
-  public $included_set;
+  protected $included_set;
 
   /**
    * @var array
    */
-  public $excluded_set;
+  protected $excluded_set;
 
   /**
    * @var DateTime
    */
-  public $start_date;
+  protected $start_date;
 
   /**
    * @var DateTime
    */
-  public $end_date;
+  protected $end_date;
 
   /**
    * @var array
    */
-  public $valid_states;
+  protected $valid_states;
 
   /**
    * @param $start_date
