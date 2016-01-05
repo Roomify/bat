@@ -64,7 +64,7 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-downloads]: https://img.shields.io/packagist/dt/roomify/bat.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/roomify/bat
-[link-travis]: https://travis-ci.org/roomify/bat
+[link-travis]: https://travis-ci.org/Roomify/bat
 [link-scrutinizer]: https://scrutinizer-ci.com/g/roomify/bat/code-structure
 [link-code-quality]: https://scrutinizer-ci.com/g/roomify/bat
 [link-downloads]: https://packagist.org/packages/roomify/bat
