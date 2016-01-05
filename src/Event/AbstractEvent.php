@@ -249,6 +249,9 @@ abstract class AbstractEvent implements EventInterface {
     return FALSE;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function isFirstDay($date) {
     if (($date->format('j') == $this->startDay()) && ($this->isFirstMonth($date))) {
       return TRUE;
@@ -257,6 +260,9 @@ abstract class AbstractEvent implements EventInterface {
     return FALSE;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function isFirstHour($date) {
     if ($date->format('G') == $this->startHour() && $this->isFirstDay($date)) {
       return TRUE;
