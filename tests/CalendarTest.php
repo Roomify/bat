@@ -6,8 +6,6 @@ use Roomify\Bat\Unit\Unit;
 use Roomify\Bat\Event\Event;
 use Roomify\Bat\Calendar\Calendar;
 
-use Roomify\Bat\Store\JsonStore;
-
 class CalendarTest extends \PHPUnit_Extensions_Database_TestCase {
 
   /**
@@ -32,7 +30,7 @@ class CalendarTest extends \PHPUnit_Extensions_Database_TestCase {
    * Test Calendar.
    */
   public function testCalendar() {
-    $start_date = new \DateTime('2016-01-01 12:12');
+    /*$start_date = new \DateTime('2016-01-01 12:12');
     $end_date = new \DateTime('2016-01-10 07:07');
 
     $state_store = new JsonStore('availability_event', JsonStore::BAT_STATE);
@@ -58,7 +56,7 @@ class CalendarTest extends \PHPUnit_Extensions_Database_TestCase {
 
     $response = $state_calendar->getMatchingUnits($start_date, $end_date, $valid_states, $constraints);
     $valid_unit_ids = array_keys($response->getIncluded());
-    var_dump($valid_unit_ids);
+    var_dump($valid_unit_ids);*/
   }
 
 }
