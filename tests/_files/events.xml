@@ -1,43 +1,11 @@
 <?xml version="1.0"?>
 <mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <database name="roomifydistro">
-	<table_data name="bat_event_availability_event_day_event">
-	<row>
-		<field name="unit_id">1</field>
-		<field name="year">2016</field>
-		<field name="month">1</field>
-		<field name="d1">0</field>
-		<field name="d2">0</field>
-		<field name="d3">0</field>
-		<field name="d4">0</field>
-		<field name="d5">0</field>
-		<field name="d6">0</field>
-		<field name="d7">0</field>
-		<field name="d8">0</field>
-		<field name="d9">0</field>
-		<field name="d10">1</field>
-		<field name="d11">1</field>
-		<field name="d12">1</field>
-		<field name="d13">1</field>
-		<field name="d14">1</field>
-		<field name="d15">1</field>
-		<field name="d16">1</field>
-		<field name="d17">1</field>
-		<field name="d18">1</field>
-		<field name="d19">1</field>
-		<field name="d20">1</field>
-		<field name="d21">1</field>
-		<field name="d22">0</field>
-		<field name="d23">0</field>
-		<field name="d24">0</field>
-		<field name="d25">0</field>
-		<field name="d26">0</field>
-		<field name="d27">0</field>
-		<field name="d28">0</field>
-		<field name="d29">0</field>
-		<field name="d30">0</field>
-		<field name="d31">0</field>
-	</row>
+	<table_data name="bat_event_availability_event_day_state">
+	</table_data>
+	<table_data name="bat_event_availability_event_hour_state">
+	</table_data>
+	<table_data name="bat_event_availability_event_minute_state">
 	</table_data>
 </database>
 </mysqldump>
