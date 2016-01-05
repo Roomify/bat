@@ -8,6 +8,7 @@
 namespace Roomify\Bat\Event;
 
 use Roomify\Bat\Event\EventInterface;
+use Roomify\Bat\Store\Store;
 
 abstract class AbstractEvent implements EventInterface {
 
