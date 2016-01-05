@@ -88,7 +88,7 @@ class DrupalDBStore extends SqlDBStore {
         foreach ($months as $month => $days) {
           db_merge($this->day_table)
             ->key(array(
-              'unit_id' => $event->unit_id,
+              'unit_id' => $event->getUnitId(),
               'year' => $year,
               'month' => $month
             ))
@@ -106,7 +106,7 @@ class DrupalDBStore extends SqlDBStore {
               if (count($hours) > 0) {
                 db_merge($this->hour_table)
                   ->key(array(
-                    'unit_id' => $event->unit_id,
+                    'unit_id' => $event->getUnitId(),
                     'year' => $year,
                     'month' => $month,
                     'day' => substr($day, 1)
@@ -125,7 +125,7 @@ class DrupalDBStore extends SqlDBStore {
               foreach ($hours as $hour => $minutes) {
                 db_merge($this->minute_table)
                   ->key(array(
-                    'unit_id' => $event->unit_id,
+                    'unit_id' => $event->getUnitId(),
                     'year' => $year,
                     'month' => $month,
                     'day' => substr($day, 1),
