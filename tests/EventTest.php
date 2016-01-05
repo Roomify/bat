@@ -8,56 +8,121 @@ use Roomify\Bat\Event\Event;
 
 class EventTest extends \PHPUnit_Framework_TestCase {
 
-  /**
-   * Test Event.
-   */
-  public function testEvent() {
+  private $event;
+
+  public function setUp() {
     $event_state = 5;
     $start_date = new \DateTime('2016-01-01 12:12');
     $end_date = new \DateTime('2016-01-10 07:07');
     $unit = new Unit(1, 2, array());
 
-    $event = new Event($start_date, $end_date, $unit->getUnitId(), $event_state);
+    $this->event = new Event($start_date, $end_date, $unit->getUnitId(), $event_state);
+  }
 
-    $this->assertEquals($event->getUnitId(), 1);
+  public function testEventGetUnitId() {
+    $this->assertEquals($this->event->getUnitId(), 1);
+  }
 
-    $this->assertEquals($event->getStartDate()->format('Y-m-d H:i'), '2016-01-01 12:12');
-    $this->assertEquals($event->getEndDate()->format('Y-m-d H:i'), '2016-01-10 07:07');
+  public function testEventGetStartDate() {
+    $this->assertEquals($this->event->getStartDate()->format('Y-m-d H:i'), '2016-01-01 12:12');
+  }
 
-    $this->assertEquals($event->startDay(), '1');
-    $this->assertEquals($event->startMonth(), '1');
-    $this->assertEquals($event->startYear(), '2016');
-    $this->assertEquals($event->startWeek(), '53');
-    $this->assertEquals($event->startHour(), '12');
-    $this->assertEquals($event->startMinute(), '12');
+  public function testEventGetEndDate() {
+    $this->assertEquals($this->event->getEndDate()->format('Y-m-d H:i'), '2016-01-10 07:07');
+  }
 
-    $this->assertEquals($event->endDay(), '10');
-    $this->assertEquals($event->endMonth(), '1');
-    $this->assertEquals($event->endYear(), '2016');
-    $this->assertEquals($event->endWeek(), '01');
-    $this->assertEquals($event->endHour(), '07');
-    $this->assertEquals($event->endMinute(), '07');
+  public function testEventStartDay() {
+    $this->assertEquals($this->event->startDay(), '1');
+  }
 
-    $this->assertEquals($event->isSameYear(), TRUE);
-    $this->assertEquals($event->isSameMonth(), TRUE);
-    $this->assertEquals($event->isSameDay(), FALSE);
-    $this->assertEquals($event->isSameHour(), FALSE);
+  public function testEventStartMonth() {
+    $this->assertEquals($this->event->startMonth(), '1');
+  }
 
-    $this->assertEquals($event->diff()->days, 8);
+  public function testEventStartYear() {
+    $this->assertEquals($this->event->startYear(), '2016');
+  }
 
+  public function testEventStartWeek() {
+    $this->assertEquals($this->event->startWeek(), '53');
+  }
+
+  public function testEventStartHour() {
+    $this->assertEquals($this->event->startHour(), '12');
+  }
+
+  public function testEventStartMinute() {
+    $this->assertEquals($this->event->startMinute(), '12');
+  }
+
+  public function testEventEndDay() {
+    $this->assertEquals($this->event->endDay(), '10');
+  }
+
+  public function testEventEndMonth() {
+    $this->assertEquals($this->event->endMonth(), '1');
+  }
+
+  public function testEventEndYear() {
+    $this->assertEquals($this->event->endYear(), '2016');
+  }
+
+  public function testEventEndWeek() {
+    $this->assertEquals($this->event->endWeek(), '01');
+  }
+
+  public function testEventEndHour() {
+    $this->assertEquals($this->event->endHour(), '07');
+  }
+
+  public function testEventEndMinute() {
+    $this->assertEquals($this->event->endMinute(), '07');
+  }
+
+  public function testEventIsSameYear() {
+    $this->assertEquals($this->event->isSameYear(), TRUE);
+  }
+
+  public function testEventIsSameMonth() {
+    $this->assertEquals($this->event->isSameMonth(), TRUE);
+  }
+
+  public function testEventIsSameDay() {
+    $this->assertEquals($this->event->isSameDay(), FALSE);
+  }
+
+  public function testEventIsSameHour() {
+    $this->assertEquals($this->event->isSameHour(), FALSE);
+  }
+
+  public function testEventDateDiff() {
+    $this->assertEquals($this->event->diff()->days, 8);
+  }
+
+  public function testEventStartsEarlier() {
     $temp_date = new \DateTime('2016-01-05 10:10');
-    $this->assertEquals($event->startsEarlier($temp_date), TRUE);
-    $this->assertEquals($event->endsLater($temp_date), TRUE);
+    $this->assertEquals($this->event->startsEarlier($temp_date), TRUE);
 
     $temp_date = new \DateTime('2015-12-05 10:10');
-    $this->assertEquals($event->startsEarlier($temp_date), FALSE);
-    $this->assertEquals($event->endsLater($temp_date), TRUE);
+    $this->assertEquals($this->event->startsEarlier($temp_date), FALSE);
 
     $temp_date = new \DateTime('2016-02-05 10:10');
-    $this->assertEquals($event->startsEarlier($temp_date), TRUE);
-    $this->assertEquals($event->endsLater($temp_date), FALSE);
+    $this->assertEquals($this->event->startsEarlier($temp_date), TRUE);
+  }
 
-    $itemized = $event->itemizeEvent();
+  public function testEventEndsLater() {
+    $temp_date = new \DateTime('2016-01-05 10:10');
+    $this->assertEquals($this->event->endsLater($temp_date), TRUE);
+
+    $temp_date = new \DateTime('2015-12-05 10:10');
+    $this->assertEquals($this->event->endsLater($temp_date), TRUE);
+
+    $temp_date = new \DateTime('2016-02-05 10:10');
+    $this->assertEquals($this->event->endsLater($temp_date), FALSE);
+  }
+
+  public function testEventItemizeEvent() {
+    $itemized = $this->event->itemizeEvent();
 
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['1']['d1'], '-1');
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['1']['d10'], '-1');

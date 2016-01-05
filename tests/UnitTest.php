@@ -6,20 +6,28 @@ use Roomify\Bat\Unit\Unit;
 
 class UnitTest extends \PHPUnit_Framework_TestCase {
 
-  /**
-   * Test Unit.
-   */
-  public function testUnit() {
-    $unit = new Unit(1, 2, array());
+  private $unit;
 
-    $this->assertEquals($unit->getUnitId(), 1);
-    $this->assertEquals($unit->getDefaultValue(), 2);
+  public function setUp() {
+    $this->unit = new Unit(1, 2, array());
+  }
 
-    $unit->setUnitId(3);
-    $this->assertEquals($unit->getUnitId(), 3);
+  public function testUnitGetUnitId() {
+    $this->assertEquals($this->unit->getUnitId(), 1);
+  }
 
-    $unit->setDefaultValue(4);
-    $this->assertEquals($unit->getDefaultValue(), 4);
+  public function testUnitGetDefaultValue() {
+    $this->assertEquals($this->unit->getDefaultValue(), 2);
+  }
+
+  public function testUnitSetUnitId() {
+    $this->unit->setUnitId(3);
+    $this->assertEquals($this->unit->getUnitId(), 3);
+  }
+
+  public function testUnitSetDefaultValue() {
+    $this->unit->setDefaultValue(4);
+    $this->assertEquals($this->unit->getDefaultValue(), 4);
   }
 
 }
