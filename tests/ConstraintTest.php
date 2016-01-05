@@ -124,15 +124,15 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
 
     $valid_states = array(0, 4, 5);
 
-    $minmax_constraint = new CheckInDayConstraint(array($unit1), 4);
-    $constraints = array($minmax_constraint);
+    $checkinday_constraint = new CheckInDayConstraint(array($unit1), 4);
+    $constraints = array($checkinday_constraint);
 
     $response = $state_calendar->getMatchingUnits($start_date, $end_date, $valid_states, $constraints);
     $valid_unit_ids = array_keys($response->getIncluded());
     $this->assertEquals($valid_unit_ids, array(2));
 
-    $minmax_constraint = new CheckInDayConstraint(array($unit2), 5);
-    $constraints = array($minmax_constraint);
+    $checkinday_constraint = new CheckInDayConstraint(array($unit2), 5);
+    $constraints = array($checkinday_constraint);
 
     $response = $state_calendar->getMatchingUnits($start_date, $end_date, $valid_states, $constraints);
     $valid_unit_ids = array_keys($response->getIncluded());

@@ -101,11 +101,11 @@ class MinMaxDaysConstraint extends Constraint {
     $text = '';
 
     // Min/max stay length constraint variables.
-    $minimum_stay = empty($this->min_days) ? '' : format_plural($this->min_days, '@count day', '@count days', array('@count' => $this->min_days));
-    $maximum_stay = empty($this->max_days) ? '' : format_plural($this->max_days, '@count day', '@count days', array('@count' => $this->max_days));
+    $minimum_stay = empty($this->min_days) ? '' : (($this->min_days == 1) ? '@count day' : '@count days');
+    $maximum_stay = empty($this->max_days) ? '' : (($this->max_days == 1) ? '@count day' : '@count days');
 
     // Day of the week constraint variable.
-    $day_of_the_week = rooms_availability_constraints_get_weekday($this->checkin_day);
+    $day_of_the_week = $this->getWeekDay($this->checkin_day);
 
     // Date range constraint variables.
     $start_date = $this->start_date->format('Y-m-d');
@@ -125,45 +125,63 @@ class MinMaxDaysConstraint extends Constraint {
 
     // Specify a date range constraint.
     if ($start_date && $end_date) {
-      $text = t('From @start_date to @end_date', $args);
+      $text = 'From @start_date to @end_date';
     }
 
     // Specify the day of the week constraint.
     if ($day_of_the_week) {
       if ($start_date && $end_date) {
-        $text = t('From @start_date to @end_date, if booking starts on @day_of_the_week', $args);
+        $text = 'From @start_date to @end_date, if booking starts on @day_of_the_week';
       }
       else {
-        $text = t('If booking starts on @day_of_the_week', $args);
+        $text = 'If booking starts on @day_of_the_week';
       }
     }
 
     // Specify the min/max stay length constraint.
     if ($minimum_stay || $maximum_stay) {
       if (empty($text)) {
-        $text = t('The stay') . ' ';
+        $text = 'The stay ';
       }
       else {
-        $text .=   ' ' . t('the stay') . ' ';
+        $text .= ' the stay ';
       }
     }
     if ($minimum_stay && $maximum_stay) {
       // Special case when min stay and max stay are the same.
       if ($minimum_stay == $maximum_stay) {
-        $text .= t('must be for @minimum_stay', $args);
+        $text .= 'must be for @minimum_stay';
       }
       else {
-        $text .= t('must be at least @minimum_stay and at most @maximum_stay', $args);
+        $text .= 'must be at least @minimum_stay and at most @maximum_stay';
       }
     }
     elseif ($minimum_stay) {
-      $text .= t('must be for at least @minimum_stay', $args);
+      $text .= 'must be for at least @minimum_stay';
     }
     elseif ($maximum_stay) {
-      $text .= t('cannot be more than @maximum_stay', $args);
+      $text .= 'cannot be more than @maximum_stay';
     }
 
-    return $text;
+    return array('text' => $text, 'args' => $args);
+  }
+
+  /**
+   * @param $day
+   * @return string
+   */
+  private function getWeekDay($day) {
+    $weekdays = array(
+      1 => 'Monday',
+      2 => 'Tuesday',
+      3 => 'Wednesday',
+      4 => 'Thursday',
+      5 => 'Friday',
+      6 => 'Saturday',
+      7 => 'Sunday',
+    );
+
+    return isset($weekdays[$day]) ? $weekdays[$day] : '';
   }
 
 }

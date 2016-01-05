@@ -71,36 +71,64 @@ class CheckInDayConstraint extends Constraint {
    */
   public function toString() {
     $text = '';
+    $args = array();
+
+    $start_date = FALSE;
+    $end_date = FALSE;
 
     // Day of the week constraint variable.
-    $day_of_the_week = rooms_availability_constraints_get_weekday($this->checkin_day);
+    $day_of_the_week = $this->getWeekDay($this->checkin_day);
 
     // Date range constraint variables.
-    // @todo: format date string.
-    $start_date = $this->start_date->format('Y-m-d');
-    $end_date = $this->end_date->format('Y-m-d');
-
-    // Next create replacement placeholders to be used in t() below.
-    $args = array(
-      '@start_date' => $start_date,
-      '@end_date' => $end_date,
-      '@day_of_the_week' => $day_of_the_week,
-    );
+    if ($this->start_date !== NULL) {
+      $start_date = $this->start_date->format('Y-m-d');
+    }
+    if ($this->start_date !== NULL) {
+      $end_date = $this->end_date->format('Y-m-d');
+    }
 
     // Finally, build out the constraint text string adding components
     // as necessary.
 
     // Specify a date range constraint.
     if ($start_date && $end_date) {
-      $text = t('From @start_date to @end_date', $args);
+      $text = 'From @start_date to @end_date';
+
+      $args['@start_date'] = $start_date;
+      $args['@end_date'] = $end_date;
     }
 
     // Specify the day of the week constraint.
     if ($day_of_the_week) {
-      $text = t('From @start_date to @end_date, bookings must start on @day_of_the_week', $args);
+      if ($start_date && $end_date) {
+        $text = 'From @start_date to @end_date, if booking starts on @day_of_the_week';
+      }
+      else {
+        $text = 'If booking starts on @day_of_the_week';
+      }
+
+      $args['@day_of_the_week'] = $day_of_the_week;
     }
 
-    return $text;
+    return array('text' => $text, 'args' => $args);
+  }
+
+  /**
+   * @param $day
+   * @return string
+   */
+  private function getWeekDay($day) {
+    $weekdays = array(
+      1 => 'Monday',
+      2 => 'Tuesday',
+      3 => 'Wednesday',
+      4 => 'Thursday',
+      5 => 'Friday',
+      6 => 'Saturday',
+      7 => 'Sunday',
+    );
+
+    return isset($weekdays[$day]) ? $weekdays[$day] : '';
   }
 
 }
