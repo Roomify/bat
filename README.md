@@ -51,7 +51,7 @@ If you discover any security related issues, please email hello@roomify.us inste
 
 ## Credits
 
-- [Roomify][roomify.us]
+- [Roomify](https://roomify.us)
 
 ## License
 
