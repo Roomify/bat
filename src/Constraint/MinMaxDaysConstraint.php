@@ -7,7 +7,8 @@
 
 namespace Roomify\Bat\Constraint;
 
-use Roomify\Bat\Constraint;
+use Roomify\Bat\Calendar\CalendarResponse;
+use Roomify\Bat\Constraint\Constraint;
 
 /**
  * Checks that a request is at least a set number of days and does not exceed a
@@ -51,8 +52,15 @@ class MinMaxDaysConstraint extends Constraint {
   /**
    * {@inheritdoc}
    */
-  public function applyConstraint(&$calendar_response) {
+  public function applyConstraint(CalendarResponse &$calendar_response) {
     parent::applyConstraint($calendar_response);
+
+    if ($this->start_date === NULL) {
+      $this->start_date = new \DateTime('1970-01-01');
+    }
+    if ($this->end_date === NULL) {
+      $this->end_date = new \DateTime('2999-12-31');
+    }
 
     if ($this->start_date->getTimestamp() <= $calendar_response->getStartDate()->getTimestamp() &&
         $this->end_date->getTimestamp() >= $calendar_response->getEndDate()->getTimestamp() &&

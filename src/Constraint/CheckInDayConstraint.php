@@ -7,6 +7,7 @@
 
 namespace Roomify\Bat\Constraint;
 
+use Roomify\Bat\Calendar\CalendarResponse;
 use Roomify\Bat\Constraint\Constraint;
 
 /**
@@ -23,7 +24,7 @@ class CheckInDayConstraint extends Constraint {
    * @param $units
    * @param $checkin_day
    */
-  public function __construct($units, $checkin_day, $start_date, $end_date) {
+  public function __construct($units, $checkin_day, $start_date = NULL, $end_date = NULL) {
     parent::__construct($units);
 
     $this->checkin_day = $checkin_day;
@@ -34,12 +35,19 @@ class CheckInDayConstraint extends Constraint {
   /**
    * {@inheritdoc}
    */
-  public function applyConstraint(&$calendar_response) {
+  public function applyConstraint(CalendarResponse &$calendar_response) {
     parent::applyConstraint($calendar_response);
+
+    if ($this->start_date === NULL) {
+      $this->start_date = new \DateTime('1970-01-01');
+    }
+    if ($this->end_date === NULL) {
+      $this->end_date = new \DateTime('2999-12-31');
+    }
 
     if ($this->start_date->getTimestamp() <= $calendar_response->getStartDate()->getTimestamp() &&
         $this->end_date->getTimestamp() >= $calendar_response->getEndDate()->getTimestamp() &&
-        $this->checkin_day !== $calendar_response->getStartDate()->format('N')) {
+        $this->checkin_day != $calendar_response->getStartDate()->format('N')) {
 
       $units = $this->getUnits();
 

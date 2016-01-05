@@ -7,6 +7,7 @@
 
 namespace Roomify\Bat\Constraint;
 
+use Roomify\Bat\Calendar\CalendarResponse;
 use Roomify\Bat\Constraint\ConstraintInterface;
 
 /**
@@ -101,7 +102,7 @@ abstract class AbstractConstraint implements ConstraintInterface {
   public function getUnits() {
     $keyed_units = array();
     foreach ($this->units as $unit) {
-      $keyed_units[$unit->unit_id] = $unit;
+      $keyed_units[$unit->getUnitId()] = $unit;
     }
 
     return $keyed_units;
@@ -110,7 +111,7 @@ abstract class AbstractConstraint implements ConstraintInterface {
   /**
    * {@inheritdoc}
    */
-  public function applyConstraint(&$calendar_response) {
+  public function applyConstraint(CalendarResponse &$calendar_response) {
     $this->calendar_response = $calendar_response;
   }
 
