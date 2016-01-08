@@ -184,9 +184,9 @@ abstract class AbstractCalendar implements CalendarInterface {
               $events[$unit][Event::BAT_DAY][$year][$month][$day] = $keyed_units[$unit]->getDefaultValue();
             }
           }
-
         }
       }
+
 
       // Fill in hour data coming from the database for our event that is represented
       // in the mock event
@@ -208,11 +208,13 @@ abstract class AbstractCalendar implements CalendarInterface {
 
       // Now fill in hour data coming from the database which the mock event did *not* cater for
       // but the mock event
-      foreach ($db_events[$unit][Event::BAT_HOUR] as $year => $months) {
-        foreach ($months as $month => $days) {
-          foreach ($days as $day => $hours) {
-            foreach ($hours as $hour => $value) {
-              $events[$unit][Event::BAT_HOUR][$year][$month]['d'.$day][$hour] = ((int)$value == 0 ? $keyed_units[$unit]->getDefaultValue() : (int)$value);
+      if (isset($db_events[$unit][Event::BAT_HOUR])) {
+        foreach ($db_events[$unit][Event::BAT_HOUR] as $year => $months) {
+          foreach ($months as $month => $days) {
+            foreach ($days as $day => $hours) {
+              foreach ($hours as $hour => $value) {
+                $events[$unit][Event::BAT_HOUR][$year][$month]['d' . $day][$hour] = ((int) $value == 0 ? $keyed_units[$unit]->getDefaultValue() : (int) $value);
+              }
             }
           }
         }
@@ -239,12 +241,14 @@ abstract class AbstractCalendar implements CalendarInterface {
       }
 
       // Now fill in minute data coming from the database which the mock event did *not* cater for
-      foreach ($db_events[$unit][Event::BAT_MINUTE] as $year => $months) {
-        foreach ($months as $month => $days) {
-          foreach ($days as $day => $hours) {
-            foreach ($hours as $hour => $minutes) {
-              foreach ($minutes as $minute => $value) {
-                $events[$unit][Event::BAT_MINUTE][$year][$month]['d'.$day]['h'.$hour][$minute] = ((int)$value == 0 ? $keyed_units[$unit]->getDefaultValue() : (int)$value);
+      if (isset($db_events[$unit][Event::BAT_MINUTE])) {
+        foreach ($db_events[$unit][Event::BAT_MINUTE] as $year => $months) {
+          foreach ($months as $month => $days) {
+            foreach ($days as $day => $hours) {
+              foreach ($hours as $hour => $minutes) {
+                foreach ($minutes as $minute => $value) {
+                  $events[$unit][Event::BAT_MINUTE][$year][$month]['d' . $day]['h' . $hour][$minute] = ((int) $value == 0 ? $keyed_units[$unit]->getDefaultValue() : (int) $value);
+                }
               }
             }
           }
@@ -380,7 +384,7 @@ abstract class AbstractCalendar implements CalendarInterface {
     // We get rid of them here so that the user has a clean result.
     foreach ($normalized_events as $unit => $events) {
       foreach ($events as $key => $event) {
-        if ($event->inRange($start_date, $end_date)) {
+        if ($event->overlaps($start_date, $end_date)) {
           // Adjust start or end dates of events so everything is within range
           if ($event->startsEarlier($start_date)) {
             $event->setStartDate($start_date);

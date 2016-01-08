@@ -206,7 +206,15 @@ interface EventInterface {
   public function isFirstMonth($date);
 
   /**
-   * Returns TRUE if the date supplied is the first month of the event
+   * Returns TRUE if the date supplied is the first day of the event
+   * @param $date
+   *
+   * @return bool
+   */
+  public function isFirstDay($date);
+
+  /**
+   * Returns TRUE if the date supplied is the last month of the event
    * @param $date
    *
    * @return bool

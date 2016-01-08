@@ -95,8 +95,8 @@ abstract class AbstractEvent implements EventInterface {
    * Utility function to always give us a standard format for viewing the start date.
    * @return mixed
    */
-  public function startDateToString() {
-    return $this->start_date->format('Y-m-d H:i:s');
+  public function startDateToString($format = 'Y-m-d H:i') {
+    return $this->start_date->format($format);
   }
 
   /**
@@ -121,8 +121,8 @@ abstract class AbstractEvent implements EventInterface {
    * Utility function to always give us a standard format for viewing the end date.
    * @return mixed
    */
-  public function endDateToString() {
-    return $this->end_date->format('Y-m-d H:i:s');
+  public function endDateToString($format = 'Y-m-d H:i') {
+    return $this->end_date->format($format);
   }
 
   /**
@@ -308,7 +308,7 @@ abstract class AbstractEvent implements EventInterface {
    * {@inheritdoc}
    */
   public function isSameHour() {
-    if (($this->startHour() == $this->endHour()) && $this->sameDay()) {
+    if (($this->startHour() == $this->endHour()) && $this->isSameDay()) {
       return TRUE;
     }
 
@@ -331,51 +331,93 @@ abstract class AbstractEvent implements EventInterface {
    * @param \DateTime $end
    * @return bool
    */
-  public function inRange(\DateTime $start, \DateTime $end) {
-    $in_range = FALSE;
+  public function overlaps(\DateTime $start, \DateTime $end) {
+    $overlaps = FALSE;
 
-    $t1 = $start->getTimestamp();
-    $t2 = $end->getTimestamp();
-    $t3 = $this->start_date->getTimeStamp();
-    $t4 = $this->end_date->getTimeStamp();
-
-    if ((($t1 <= $t3) && ($t2 >= $t3)) || (($t1 <= $t4) && ($t2 >= $t4)) || (($t1 >= $t3) && ($t2 <= $t4))) {
-      $in_range = TRUE;
+    if ($this->dateIsEarlier($start) &&
+      ($this->dateIsInRange($end) || $this->dateIsLater($end))) {
+      $overlaps = TRUE;
+    }
+    elseif ($this->dateIsInRange($start) &&
+      ($this->dateIsInRange($end) || $this->dateIsLater($end))) {
+      $overlaps = TRUE;
     }
 
-    return $in_range;
+    return $overlaps;
   }
 
   /**
-   * Checks if our event startsEarlier than the start date provided
+   * Checks if date supplied is in range of event
+   *
    * @param \DateTime $date
    * @return bool
    */
-  public function startsEarlier(\DateTime $date) {
-    $early = FALSE;
+  public function dateIsInRange(\DateTime $date) {
+    $dateInRange = FALSE;
 
-    $t1 = $date->getTimestamp();
-    $our_start = $this->start_date->getTimeStamp();
+    $t1 = $this->start_date->getTimeStamp();
+    $t2 = $this->end_date->getTimeStamp();
 
-    if ($our_start < $t1) {
-      $early = TRUE;
+    $t3 = $date->getTimeStamp();
+
+    if (($t3 >= $t1) && ($t3 <= $t2)) {
+      $dateInRange = TRUE;
     }
 
-    return $early;
+    return $dateInRange;
   }
 
   /**
-   * Checks if our event ends after than the date provided
+   * Checks if the date supplied starts earlier than our event
+   * @param \DateTime $date
+   * @return bool
+   */
+  public function dateIsEarlier(\DateTime $date) {
+    $dateEarlier = FALSE;
+
+    $t1 = $this->start_date->getTimeStamp();
+
+    $t3 = $date->getTimeStamp();
+
+    if ($t3 < $t1) {
+      $dateEarlier = TRUE;
+    }
+
+    return $dateEarlier;
+  }
+
+  /**
+   * Checks if the date supplied ends after our event ends
+   * @param \DateTime $date
+   * @return bool
+   */
+  public function dateIsLater(\DateTime $date) {
+    $dateLater = FALSE;
+
+    $t2 = $this->end_date->getTimeStamp();
+
+    $t4 = $date->getTimestamp();
+
+    if ($t2 < $t4) {
+      $dateLater = TRUE;
+    }
+
+    return $dateLater;
+  }
+
+  /**
+   * Checks if our event ends after the date supplied
    * @param \DateTime $date
    * @return bool
    */
   public function endsLater(\DateTime $date) {
     $later = FALSE;
 
-    $t1 = $date->getTimestamp();
-    $our_end = $this->end_date->getTimeStamp();
+    $t2 = $this->end_date->getTimeStamp();
 
-    if ($our_end > $t1) {
+    $t4 = $date->getTimestamp();
+
+    if ($t2 > $t4) {
       $later = TRUE;
     }
 
@@ -383,8 +425,27 @@ abstract class AbstractEvent implements EventInterface {
   }
 
   /**
+   * Checks if our event starts earlier than the date supplied
+   * @param \DateTime $date
+   * @return bool
+   */
+  public function startsEarlier(\DateTime $date) {
+    $earlier = FALSE;
+
+    $t1 = $this->start_date->getTimeStamp();
+
+    $t3 = $date->getTimestamp();
+
+    if ($t1 < $t3) {
+      $earlier = TRUE;
+    }
+
+    return $earlier;
+  }
+
+  /**
    * Based on the start and end dates of the event it creates the appropriate granular events
-   * and adds them to an array appropriate for manipulating easily or storing in the database.
+   * and adds them to an array suitable for manipulating easily or storing in the database.
    *
    * @param array $itemized
    * @return array
@@ -427,12 +488,18 @@ abstract class AbstractEvent implements EventInterface {
         $itemized[AbstractEvent::BAT_HOUR][$sy][$sm]['d' . $sd] = array();
         $itemized[AbstractEvent::BAT_MINUTE][$sy][$sm]['d' . $sd] = array();
       }
-      // Deal with the end date unless it ends on midnight precisely at which point the day does not count
-      $end_period = new \DatePeriod(new \DateTime($end_date->format("Y-n-j 00:00:00")), $interval, $end_date->add(new \DateInterval('PT1M')));
-      $itemized_end = $this->createHourlyGranular($end_period, new \DateTime($end_date->format("Y-n-j 00:00:00")));
-      $itemized[AbstractEvent::BAT_DAY][$ey][$em]['d' . $ed] = -1;
-      $itemized[AbstractEvent::BAT_HOUR][$ey][$em]['d' . $ed] = $itemized_end[AbstractEvent::BAT_HOUR][$ey][$em]['d' . $ed];
-      $itemized[AbstractEvent::BAT_MINUTE][$ey][$em]['d' . $ed] = $itemized_end[AbstractEvent::BAT_MINUTE][$ey][$em]['d' . $ed];
+
+      // Deal with the end date unless it ends just before midnight at which point we don't need to go further
+      if ($this->end_date->format('H:i') == '23:59' ) {
+        $itemized[AbstractEvent::BAT_HOUR][$ey][$em]['d' . $ed] = array();
+        $itemized[AbstractEvent::BAT_MINUTE][$ey][$em]['d' . $ed] = array();
+      } else {
+        $end_period = new \DatePeriod(new \DateTime($end_date->format("Y-n-j 00:00:00")), $interval, $end_date->add(new \DateInterval('PT1M')));
+        $itemized_end = $this->createHourlyGranular($end_period, new \DateTime($end_date->format("Y-n-j 00:00:00")));
+        $itemized[AbstractEvent::BAT_DAY][$ey][$em]['d' . $ed] = -1;
+        $itemized[AbstractEvent::BAT_HOUR][$ey][$em]['d' . $ed] = $itemized_end[AbstractEvent::BAT_HOUR][$ey][$em]['d' . $ed];
+        $itemized[AbstractEvent::BAT_MINUTE][$ey][$em]['d' . $ed] = $itemized_end[AbstractEvent::BAT_MINUTE][$ey][$em]['d' . $ed];
+      }
     }
 
     return $itemized;

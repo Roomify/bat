@@ -20,5 +20,5 @@ interface ValuatorInterface {
    * @param $events
    * @return int value
    */
-  public function determineValue($events);
+  public function determineValue();
 }

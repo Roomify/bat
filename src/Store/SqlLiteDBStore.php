@@ -86,6 +86,10 @@ class SqlLiteDBStore extends SqlDBStore {
   public function storeEvent(Event $event, $granularity = Event::BAT_HOURLY) {
     $stored = TRUE;
 
+    // Get existing event data from db
+    $existing_events = $this->getEventData($event->getStartDate(), $event->getEndDate(), array($event->getUnitId()));
+
+
     try {
       // Itemize an event so we can save it
       $itemized = $event->itemizeEvent($granularity);
@@ -95,7 +99,18 @@ class SqlLiteDBStore extends SqlDBStore {
         foreach ($months as $month => $days) {
           $values = array_values($days);
           $keys = array_keys($days);
-          $this->pdo->exec("INSERT OR REPLACE INTO $this->day_table (unit_id, year, month, " . implode(', ', $keys) . ") VALUES (" . $event->getUnitId() . ", $year, $month, " . implode(', ', $values) . ")");
+          // Because SQLite does not have a nice merge first we have to check if a row exists to determine whether to do an insert or an update
+          if (isset($existing_events[$event->getUnitId()][EVENT::BAT_DAY][$year][$month])) {
+            $command = "UPDATE $this->day_table SET ";
+            foreach ($days as $day => $value){
+              $command .=   "$day = $value,";
+            }
+            $command = rtrim($command, ',');
+            $command .= " WHERE unit_id = " . $event->getUnitId() ." AND year = $year AND month = $month";
+            $this->pdo->exec($command);
+          } else {
+            $this->pdo->exec("INSERT INTO $this->day_table (unit_id, year, month, " . implode(', ', $keys) . ") VALUES (" . $event->getUnitId() . ", $year, $month, " . implode(', ', $values) . ")");
+          }
         }
       }
 
@@ -108,7 +123,17 @@ class SqlLiteDBStore extends SqlDBStore {
               if (count($hours) > 0) {
                 $values = array_values($hours);
                 $keys = array_keys($hours);
-                $this->pdo->exec("INSERT OR REPLACE INTO $this->hour_table (unit_id, year, month, day, " . implode(', ', $keys) . ") VALUES (" . $event->getUnitId() . ", $year, $month, " . substr($day, 1) . ", " . implode(', ', $values) . ")");
+                if (isset($existing_events[$event->getUnitId()][EVENT::BAT_DAY][$year][$month][$day])) {
+                  $command = "UPDATE $this->hour_table SET ";
+                  foreach ($hours as $hour => $value){
+                    $command .=   "$hour = $value,";
+                  }
+                  $command = rtrim($command, ',');
+                  $command .= " WHERE unit_id = " . $event->getUnitId() ." AND year = $year AND month = $month AND day = ". substr($day,1);
+                  $this->pdo->exec($command);
+                } else {
+                  $this->pdo->exec("INSERT INTO $this->hour_table (unit_id, year, month, day, " . implode(', ', $keys) . ") VALUES (" . $event->getUnitId() . ", $year, $month, " . substr($day, 1) . ", " . implode(', ', $values) . ")");
+                }
               }
             }
           }
@@ -121,7 +146,17 @@ class SqlLiteDBStore extends SqlDBStore {
               foreach ($hours as $hour => $minutes) {
                 $values = array_values($minutes);
                 $keys = array_keys($minutes);
-                $this->pdo->exec("INSERT OR REPLACE INTO $this->minute_table (unit_id, year, month, day, hour, " . implode(', ', $keys) . ") VALUES (" . $event->getUnitId() . ", $year, $month, " . substr($day, 1) . ", " . substr($hour, 1) . ", " . implode(', ', $values) . ")");
+                if (isset($existing_events[$event->getUnitId()][EVENT::BAT_DAY][$year][$month][$day][$hour])) {
+                  $command = "UPDATE $this->minute_table SET ";
+                  foreach ($minutes as $minute => $value){
+                    $command .=   "$minute = $value,";
+                  }
+                  $command = rtrim($command, ',');
+                  $command .= " WHERE unit_id = " . $event->getUnitId() ." AND year = $year AND month = $month AND day = ". substr($day,1) . " AND hour = " . substr($hour,1);
+                  $this->pdo->exec($command);
+                } else {
+                  $this->pdo->exec("INSERT INTO $this->minute_table (unit_id, year, month, day, hour, " . implode(', ', $keys) . ") VALUES (" . $event->getUnitId() . ", $year, $month, " . substr($day, 1) . ", " . substr($hour, 1) . ", " . implode(', ', $values) . ")");
+                }
               }
             }
           }
@@ -129,7 +164,7 @@ class SqlLiteDBStore extends SqlDBStore {
       }
     }
     catch (\Exception $e) {
-      $saved = FALSE;
+      $stored = FALSE;
     }
 
     return $stored;
