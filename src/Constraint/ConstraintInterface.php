@@ -27,7 +27,7 @@ interface ConstraintInterface {
   public function setStartDate(\DateTime $start_date);
 
   /**
-   * @return DateTime
+   * @return \DateTime
    */
   public function getStartDate();
 
@@ -37,7 +37,7 @@ interface ConstraintInterface {
   public function setEndDate(\DateTime $end_date);
 
   /**
-   * @return DateTime
+   * @return \DateTime
    */
   public function getEndDate();
 
