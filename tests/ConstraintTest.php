@@ -63,14 +63,14 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     $state_calendar = new Calendar($units, $state_store);
     $event_calendar = new Calendar($units, $event_store);
 
-    $state_event1 = new Event($start_date, $end_date, $unit1->getUnitId(), 4);
-    $event_id_event1 = new Event($start_date, $end_date, $unit1->getUnitId(), 2);
+    $state_event1 = new Event($start_date, $end_date, $unit1, 4);
+    $event_id_event1 = new Event($start_date, $end_date, $unit1, 2);
 
     $state_calendar->addEvents(array($state_event1), Event::BAT_HOURLY);
     $event_calendar->addEvents(array($event_id_event1), Event::BAT_HOURLY);
 
-    $state_event2 = new Event($start_date, $end_date, $unit2->getUnitId(), 5);
-    $event_id_event2 = new Event($start_date, $end_date, $unit2->getUnitId(), 3);
+    $state_event2 = new Event($start_date, $end_date, $unit2, 5);
+    $event_id_event2 = new Event($start_date, $end_date, $unit2, 3);
 
     $state_calendar->addEvents(array($state_event2), Event::BAT_HOURLY);
     $event_calendar->addEvents(array($event_id_event2), Event::BAT_HOURLY);
@@ -110,14 +110,14 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     $state_calendar = new Calendar($units, $state_store);
     $event_calendar = new Calendar($units, $event_store);
 
-    $state_event1 = new Event($start_date, $end_date, $unit1->getUnitId(), 4);
-    $event_id_event1 = new Event($start_date, $end_date, $unit1->getUnitId(), 2);
+    $state_event1 = new Event($start_date, $end_date, $unit1, 4);
+    $event_id_event1 = new Event($start_date, $end_date, $unit1, 2);
 
     $state_calendar->addEvents(array($state_event1), Event::BAT_HOURLY);
     $event_calendar->addEvents(array($event_id_event1), Event::BAT_HOURLY);
 
-    $state_event2 = new Event($start_date, $end_date, $unit2->getUnitId(), 5);
-    $event_id_event2 = new Event($start_date, $end_date, $unit2->getUnitId(), 3);
+    $state_event2 = new Event($start_date, $end_date, $unit2, 5);
+    $event_id_event2 = new Event($start_date, $end_date, $unit2, 3);
 
     $state_calendar->addEvents(array($state_event2), Event::BAT_HOURLY);
     $event_calendar->addEvents(array($event_id_event2), Event::BAT_HOURLY);

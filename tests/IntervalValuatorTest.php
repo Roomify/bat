@@ -36,8 +36,8 @@ class AggregateValuatorTest extends \PHPUnit_Framework_TestCase {
     $this->u2 = new Unit(2, 4, array());
     $this->u3 = new Unit(3, 6, array());
 
-    $this->e1 = new Event($sd1, $ed1, $this->u1->getUnitId(), $es1);
-    $this->e2 = new Event ($sd2, $ed2, $this->u1->getUnitId(), $es2);
+    $this->e1 = new Event($sd1, $ed1, $this->u1, $es1);
+    $this->e2 = new Event ($sd2, $ed2, $this->u1, $es2);
 
     if ($this->pdo === NULL) {
       $this->pdo = new \PDO('sqlite::memory:');

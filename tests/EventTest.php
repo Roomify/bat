@@ -16,7 +16,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
     $end_date = new \DateTime('2016-01-10 07:07');
     $unit = new Unit(1, 2, array());
 
-    $this->event = new Event($start_date, $end_date, $unit->getUnitId(), $event_state);
+    $this->event = new Event($start_date, $end_date, $unit, $event_state);
   }
 
   public function testEventUnitId() {
@@ -354,7 +354,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
     $end_date = new \DateTime('2016-01-01 12:13');
     $unit = new Unit(1, 2, array());
 
-    $event = new Event($start_date, $end_date, $unit->getUnitId(), $event_state);
+    $event = new Event($start_date, $end_date, $unit, $event_state);
 
     $itemized = $event->itemizeEvent();
 
@@ -372,7 +372,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
     $end_date = new \DateTime('2016-01-01 12:12');
     $unit = new Unit(1, 2, array());
 
-    $event = new Event($start_date, $end_date, $unit->getUnitId(), $event_state);
+    $event = new Event($start_date, $end_date, $unit, $event_state);
 
     $itemized = $event->itemizeEvent();
 
@@ -389,7 +389,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
     $end_date = new \DateTime('2016-03-01 23:59');
     $unit = new Unit(1, 2, array());
 
-    $event = new Event($start_date, $end_date, $unit->getUnitId(), $event_state);
+    $event = new Event($start_date, $end_date, $unit, $event_state);
 
     $itemized = $event->itemizeEvent();
 
@@ -428,7 +428,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
     $end_date = new \DateTime('2016-03-01 23:59');
     $unit = new Unit(1, 2, array());
 
-    $event = new Event($start_date, $end_date, $unit->getUnitId(), $event_state);
+    $event = new Event($start_date, $end_date, $unit, $event_state);
 
     $itemized = $event->itemizeEvent();
 
