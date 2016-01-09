@@ -32,14 +32,14 @@ abstract class AbstractEvent implements EventInterface {
   /**
    * The start date for the event.
    *
-   * @var DateTime
+   * @var \DateTime
    */
   protected $start_date;
 
   /**
    * The end date for the event.
    *
-   * @var DateTime
+   * @var \DateTime
    */
   protected $end_date;
 
@@ -518,7 +518,6 @@ abstract class AbstractEvent implements EventInterface {
    * @return array
    */
   public function createHourlyGranular(\DatePeriod $period, \DateTime $period_start) {
-    $interval = new \DateInterval('PT1M');
     $itemized = array();
 
     $counter = (int)$period_start->format('i');
@@ -569,7 +568,6 @@ abstract class AbstractEvent implements EventInterface {
 
       $year = $date->format("Y");
       $dayinterval = new \DateInterval('P1D');
-      $dayrange = null;
 
       // Handle the first month
       if ($this->isFirstMonth($date)) {
