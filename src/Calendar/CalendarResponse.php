@@ -31,12 +31,12 @@ class CalendarResponse {
   protected $excluded_set;
 
   /**
-   * @var DateTime
+   * @var \DateTime
    */
   protected $start_date;
 
   /**
-   * @var DateTime
+   * @var \DateTime
    */
   protected $end_date;
 
