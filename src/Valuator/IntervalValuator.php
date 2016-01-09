@@ -54,11 +54,10 @@ class IntervalValuator extends AbstractValuator {
       //var_dump($unit);
       //var_dump($unit_events);
       foreach ($unit_events as $event){
-        if ($unit = $this->unit->getUnitId()){
+        if ($unit == $this->unit->getUnitId()){
           foreach ($period as $dt) {
               // If event in period involved add value of event
               // If event is not completely in period involved then add just the percentage that is
-              $last_period = $dt;
             print_r("Event is: ");
             print_r($event->getStartDate()->format('Y-m-d H:i:s') ." to ");
             print_r($event->getEndDate()->format('Y-m-d H:i:s') ."\n");
@@ -73,7 +72,6 @@ class IntervalValuator extends AbstractValuator {
         }
       }
     }
-    var_dump($value);
     return $value;
   }
 
