@@ -58,7 +58,7 @@ class SetupStore{
     $command = 'CREATE TABLE ' . 'bat_event_'.$table_name.'_minute_'.$type;
     $command .= ' (unit_id INTEGER NOT NULL DEFAULT 0, year INTEGER NOT NULL DEFAULT 0, month INTEGER NOT NULL DEFAULT 0, day INTEGER NOT NULL DEFAULT 0, hour INTEGER NOT NULL DEFAULT 0,';
 
-    for ($i=1; $i<=59; $i++) {
+    for ($i=0; $i<=59; $i++) {
       if ($i <= 9) { $m='0' . $i; } else { $m = $i; }
       $command .= 'm'.$m .' INTEGER NOT NULL DEFAULT 0, ';
     }
