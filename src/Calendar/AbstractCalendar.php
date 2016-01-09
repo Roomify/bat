@@ -357,7 +357,6 @@ abstract class AbstractCalendar implements CalendarInterface {
       $current_value = NULL;
       $start_event = NULL;
       $end_event = NULL;
-      $event_value = NULL;
 
       foreach ($data[Event::BAT_DAY] as $year => $months) {
         // Make sure months are in right order
@@ -527,7 +526,7 @@ abstract class AbstractCalendar implements CalendarInterface {
    * Returns the unit object.
    *
    * @param $unit_id
-   * @return mixed
+   * @return Unit
    */
   protected function getUnit($unit_id) {
     $keyed =  $this->keyUnitsById();

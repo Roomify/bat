@@ -89,7 +89,7 @@ abstract class SqlDBStore extends Store {
     $minutes_query = TRUE;
 
     // Create a mock event which we will use to determine how to query the database
-    $mock_event = new Event($start_date, $end_date, new Unit(0,0,null), -10);
+    $mock_event = new Event($start_date, $end_date, new Unit(0, 0, NULL), -10);
     // We don't need a granular event even if we are retrieving granular data - since we don't
     // know what the event break-down is going to be we need to get the full range of data from
     // days, hours and minutes.
@@ -101,16 +101,16 @@ abstract class SqlDBStore extends Store {
 
     $query_parameters = '';
 
-    foreach($itemized[Event::BAT_DAY] as $year => $months) {
+    foreach ($itemized[Event::BAT_DAY] as $year => $months) {
       if ($year_count > 0) {
         // We are dealing with multiple years so add an OR
         $query_parameters .= ' OR ';
       }
       $query_parameters .= 'year IN (' . $year . ') ';
-      $query_parameters .= 'AND month IN (' . implode("," ,array_keys($months)) .') ';
+      $query_parameters .= 'AND month IN (' . implode("," ,array_keys($months)) . ') ';
       if (count($unit_ids) > 0) {
         // Unit ids are defined so add this as a filter
-        $query_parameters .= 'AND unit_id in (' . implode("," , $unit_ids) .') ';
+        $query_parameters .= 'AND unit_id in (' . implode("," , $unit_ids) . ') ';
       }
       $year_count++;
     }

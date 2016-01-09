@@ -28,7 +28,7 @@ class Event extends AbstractEvent {
    * @param $unit
    * @param $value
    */
-  public function __construct(\DateTime $start_date, \DateTime $end_date, Unit $unit , $value = 0) {
+  public function __construct(\DateTime $start_date, \DateTime $end_date, Unit $unit, $value = 0) {
     $this->unit_id = $unit->getUnitId();
     $this->unit = $unit;
     $this->start_date = clone($start_date);

@@ -34,7 +34,7 @@ class SqlLiteDBStore extends SqlDBStore {
    */
   public function getEventData(\DateTime $start_date, \DateTime $end_date, $unit_ids) {
 
-    $queries  = $this->buildQueries($start_date, $end_date, $unit_ids);
+    $queries = $this->buildQueries($start_date, $end_date, $unit_ids);
 
     $results = array();
     // Run each query and store results
@@ -50,27 +50,27 @@ class SqlLiteDBStore extends SqlDBStore {
       $temp_date = new \DateTime($data['year'] . "-" . $data['month']);
       $days_in_month = (int)$temp_date->format('t');
       for ($i = 1; $i<=$days_in_month; $i++) {
-        $db_events[$data['unit_id']][Event::BAT_DAY][$data['year']][$data['month']]['d' . $i] = $data['d'.$i];
+        $db_events[$data['unit_id']][Event::BAT_DAY][$data['year']][$data['month']]['d' . $i] = $data['d' . $i];
       }
     }
 
     // With the day events taken care off let's cycle through hours
     foreach ($results[Event::BAT_HOUR]->fetchAll() as $data) {
       for ($i = 0; $i<=23; $i++) {
-        $db_events[$data['unit_id']][Event::BAT_HOUR][$data['year']][$data['month']]['d'.$data['day']]['h'. $i] = $data['h'.$i];
+        $db_events[$data['unit_id']][Event::BAT_HOUR][$data['year']][$data['month']]['d' . $data['day']]['h' . $i] = $data['h' . $i];
       }
     }
 
     // With the hour events taken care off let's cycle through minutes
     foreach ($results[Event::BAT_MINUTE]->fetchAll() as $data) {
-      for ($i = 0; $i<=59; $i++) {
+      for ($i = 0; $i <= 59; $i++) {
         if ($i <= 9) {
-          $index = 'm0'.$i;
+          $index = 'm0' . $i;
         }
         else {
-          $index = 'm'.$i;
+          $index = 'm' . $i;
         }
-        $db_events[$data['unit_id']][Event::BAT_MINUTE][$data['year']][$data['month']]['d'.$data['day']]['h'.$data['hour']][$index] = $data[$index];
+        $db_events[$data['unit_id']][Event::BAT_MINUTE][$data['year']][$data['month']]['d' . $data['day']]['h' . $data['hour']][$index] = $data[$index];
       }
     }
 
@@ -103,10 +103,10 @@ class SqlLiteDBStore extends SqlDBStore {
           if (isset($existing_events[$event->getUnitId()][EVENT::BAT_DAY][$year][$month])) {
             $command = "UPDATE $this->day_table SET ";
             foreach ($days as $day => $value){
-              $command .=   "$day = $value,";
+              $command .= "$day = $value,";
             }
             $command = rtrim($command, ',');
-            $command .= " WHERE unit_id = " . $event->getUnitId() ." AND year = $year AND month = $month";
+            $command .= " WHERE unit_id = " . $event->getUnitId() . " AND year = $year AND month = $month";
             $this->pdo->exec($command);
           } else {
             $this->pdo->exec("INSERT INTO $this->day_table (unit_id, year, month, " . implode(', ', $keys) . ") VALUES (" . $event->getUnitId() . ", $year, $month, " . implode(', ', $values) . ")");
@@ -126,10 +126,10 @@ class SqlLiteDBStore extends SqlDBStore {
                 if (isset($existing_events[$event->getUnitId()][EVENT::BAT_HOUR][$year][$month][$day])) {
                   $command = "UPDATE $this->hour_table SET ";
                   foreach ($hours as $hour => $value){
-                    $command .=   "$hour = $value,";
+                    $command .= "$hour = $value,";
                   }
                   $command = rtrim($command, ',');
-                  $command .= " WHERE unit_id = " . $event->getUnitId() ." AND year = $year AND month = $month AND day = ". substr($day,1);
+                  $command .= " WHERE unit_id = " . $event->getUnitId() . " AND year = $year AND month = $month AND day = " . substr($day,1);
                   $this->pdo->exec($command);
                 } else {
                   $this->pdo->exec("INSERT INTO $this->hour_table (unit_id, year, month, day, " . implode(', ', $keys) . ") VALUES (" . $event->getUnitId() . ", $year, $month, " . substr($day, 1) . ", " . implode(', ', $values) . ")");
@@ -149,10 +149,10 @@ class SqlLiteDBStore extends SqlDBStore {
                 if (isset($existing_events[$event->getUnitId()][EVENT::BAT_MINUTE][$year][$month][$day][$hour])) {
                   $command = "UPDATE $this->minute_table SET ";
                   foreach ($minutes as $minute => $value){
-                    $command .=   "$minute = $value,";
+                    $command .= "$minute = $value,";
                   }
                   $command = rtrim($command, ',');
-                  $command .= " WHERE unit_id = " . $event->getUnitId() ." AND year = $year AND month = $month AND day = ". substr($day,1) . " AND hour = " . substr($hour,1);
+                  $command .= " WHERE unit_id = " . $event->getUnitId() . " AND year = $year AND month = $month AND day = " . substr($day,1) . " AND hour = " . substr($hour,1);
                   $this->pdo->exec($command);
                 } else {
                   $this->pdo->exec("INSERT INTO $this->minute_table (unit_id, year, month, day, hour, " . implode(', ', $keys) . ") VALUES (" . $event->getUnitId() . ", $year, $month, " . substr($day, 1) . ", " . substr($hour, 1) . ", " . implode(', ', $values) . ")");
