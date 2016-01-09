@@ -57,7 +57,7 @@ class SqlLiteDBStore extends SqlDBStore {
     // With the day events taken care off let's cycle through hours
     foreach ($results[Event::BAT_HOUR]->fetchAll() as $data) {
       for ($i = 0; $i<=23; $i++) {
-        $db_events[$data['unit_id']][Event::BAT_HOUR][$data['year']][$data['month']][$data['day']]['h'. $i] = $data['h'.$i];
+        $db_events[$data['unit_id']][Event::BAT_HOUR][$data['year']][$data['month']]['d'.$data['day']]['h'. $i] = $data['h'.$i];
       }
     }
 
@@ -70,7 +70,7 @@ class SqlLiteDBStore extends SqlDBStore {
         else {
           $index = 'm'.$i;
         }
-        $db_events[$data['unit_id']][Event::BAT_MINUTE][$data['year']][$data['month']][$data['day']][$data['hour']][$index] = $data[$index];
+        $db_events[$data['unit_id']][Event::BAT_MINUTE][$data['year']][$data['month']]['d'.$data['day']]['h'.$data['hour']][$index] = $data[$index];
       }
     }
 
@@ -114,7 +114,7 @@ class SqlLiteDBStore extends SqlDBStore {
         }
       }
 
-      if ($granularity == Event::BAT_HOURLY) {
+      if (($granularity == Event::BAT_HOURLY) && isset($itemized[Event::BAT_HOUR])) {
         // Write Hours
         foreach ($itemized[Event::BAT_HOUR] as $year => $months) {
           foreach ($months as $month => $days) {
@@ -123,7 +123,7 @@ class SqlLiteDBStore extends SqlDBStore {
               if (count($hours) > 0) {
                 $values = array_values($hours);
                 $keys = array_keys($hours);
-                if (isset($existing_events[$event->getUnitId()][EVENT::BAT_DAY][$year][$month][$day])) {
+                if (isset($existing_events[$event->getUnitId()][EVENT::BAT_HOUR][$year][$month][$day])) {
                   $command = "UPDATE $this->hour_table SET ";
                   foreach ($hours as $hour => $value){
                     $command .=   "$hour = $value,";
@@ -146,7 +146,7 @@ class SqlLiteDBStore extends SqlDBStore {
               foreach ($hours as $hour => $minutes) {
                 $values = array_values($minutes);
                 $keys = array_keys($minutes);
-                if (isset($existing_events[$event->getUnitId()][EVENT::BAT_DAY][$year][$month][$day][$hour])) {
+                if (isset($existing_events[$event->getUnitId()][EVENT::BAT_MINUTE][$year][$month][$day][$hour])) {
                   $command = "UPDATE $this->minute_table SET ";
                   foreach ($minutes as $minute => $value){
                     $command .=   "$minute = $value,";
