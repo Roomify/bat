@@ -85,9 +85,6 @@ abstract class SqlDBStore extends Store {
     $queries[Event::BAT_HOUR] = 'SELECT * FROM ' . $this->hour_table . ' WHERE ';
     $queries[Event::BAT_MINUTE] = 'SELECT * FROM ' . $this->minute_table . ' WHERE ';
 
-    $hours_query = TRUE;
-    $minutes_query = TRUE;
-
     // Create a mock event which we will use to determine how to query the database
     $mock_event = new Event($start_date, $end_date, new Unit(0, 0, NULL), -10);
     // We don't need a granular event even if we are retrieving granular data - since we don't
@@ -96,8 +93,6 @@ abstract class SqlDBStore extends Store {
     $itemized = $mock_event->itemizeEvent(Event::BAT_DAILY);
 
     $year_count = 0;
-    $hour_count = 0;
-    $minute_count = 0;
 
     $query_parameters = '';
 
