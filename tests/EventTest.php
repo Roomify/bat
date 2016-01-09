@@ -431,7 +431,6 @@ class EventTest extends \PHPUnit_Framework_TestCase {
     $event = new Event($start_date, $end_date, $unit->getUnitId(), $event_state);
 
     $itemized = $event->itemizeEvent();
-    var_dump($itemized);
 
     // First day should be 5
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['1']['d1'], '5');
