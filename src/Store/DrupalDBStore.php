@@ -140,7 +140,7 @@ class DrupalDBStore extends SqlDBStore {
       }
     }
     catch (\Exception $e) {
-      $saved = FALSE;
+      $stored = FALSE;
       $transaction->rollback();
       watchdog_exception('BAT Event Save Exception', $e);
     }
