@@ -379,7 +379,9 @@ abstract class AbstractCalendar implements CalendarInterface {
                     }
                     elseif (($current_value != $minute_value) && ($current_value !== NULL)) {
                       // Value just switched - let us wrap up with current event and start a new one
-                      $normalized_events[$unit_id][] = new Event($start_event, $end_event, $this->getUnit($unit_id), $current_value);
+                      if (($start_event !== NULL) && ($end_event !== NULL)) {
+                        $normalized_events[$unit_id][] = new Event($start_event, $end_event, $this->getUnit($unit_id), $current_value);
+                      }
                       $start_event = clone($end_event->add(new \DateInterval('PT1M')));
                       $end_event = new \DateTime($year . '-' . $month . '-' . substr($day, 1) . ' ' . substr($hour, 1) . ':' . substr($minute,1));
                       $current_value = $minute_value;
@@ -398,7 +400,9 @@ abstract class AbstractCalendar implements CalendarInterface {
                 }
                 elseif (($current_value != $hour_value) && ($current_value !== NULL)) {
                   // Value just switched - let us wrap up with current event and start a new one
-                  $normalized_events[$unit_id][] = new Event($start_event, $end_event, $this->getUnit($unit_id), $current_value);
+                  if (($start_event !== NULL) && ($end_event !== NULL)) {
+                    $normalized_events[$unit_id][] = new Event($start_event, $end_event, $this->getUnit($unit_id), $current_value);
+                  }
                   // Start event becomes the end event with a minute added
                   $start_event = clone($end_event->add(new \DateInterval('PT1M')));
                   // End event comes the current point in time
