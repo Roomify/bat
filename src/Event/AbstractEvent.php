@@ -9,6 +9,7 @@ namespace Roomify\Bat\Event;
 
 use Roomify\Bat\Event\EventInterface;
 use Roomify\Bat\Store\Store;
+use Roomify\Bat\Unit\Unit;
 
 abstract class AbstractEvent implements EventInterface {
 
@@ -23,6 +24,11 @@ abstract class AbstractEvent implements EventInterface {
    * @var int
    */
   protected $unit_id;
+
+  /**
+   * The unit the event is relevant to
+   */
+  protected $unit;
 
   /**
    * The start date for the event.

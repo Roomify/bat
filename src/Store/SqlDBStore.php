@@ -8,6 +8,7 @@
 namespace Roomify\Bat\Store;
 
 use Roomify\Bat\Event\Event;
+use Roomify\Bat\Unit\Unit;
 use Roomify\Bat\Store\SqlDBStore;
 
 /**
@@ -88,7 +89,7 @@ abstract class SqlDBStore extends Store {
     $minutes_query = TRUE;
 
     // Create a mock event which we will use to determine how to query the database
-    $mock_event = new Event($start_date, $end_date, 0, -10);
+    $mock_event = new Event($start_date, $end_date, new Unit(0,0,null), -10);
     // We don't need a granular event even if we are retrieving granular data - since we don't
     // know what the event break-down is going to be we need to get the full range of data from
     // days, hours and minutes.
