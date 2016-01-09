@@ -56,8 +56,8 @@ class CalendarResponse {
     $this->start_date = $start_date;
     $this->end_date = $end_date;
     $this->valid_states = $valid_states;
-    $this->included = $included;
-    $this->excluded = $excluded;
+    $this->included_set = $included;
+    $this->excluded_set = $excluded;
   }
 
   /**
