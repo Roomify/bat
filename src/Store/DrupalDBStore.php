@@ -97,7 +97,7 @@ class DrupalDBStore extends SqlDBStore {
         }
       }
 
-      if ($granularity == Event::BAT_HOURLY) {
+      if (($granularity == Event::BAT_HOURLY) && isset($itemized[Event::BAT_HOUR])) {
         // Write Hours
         foreach ($itemized[Event::BAT_HOUR] as $year => $months) {
           foreach ($months as $month => $days) {
