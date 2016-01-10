@@ -553,8 +553,9 @@ abstract class AbstractEvent implements EventInterface {
    * @return array
    */
   public function itemizeEvent($granularity = AbstractEvent::BAT_HOURLY) {
-    // The largest interval we deal with are months (a row in the *_state/*_event tables)
-    $interval = new \DateInterval('P1M');
+    // Set the interval to day - we are going to have to cycle through each single day and
+    // check if month changes or not since month lengths can vary (30,31,28,29)
+    $interval = new \DateInterval('P1D');
 
     // Set the end date to the last day of the month so that we are sure to get that last month
     $adjusted_end_day = new \DateTime($this->end_date->format('Y-n-t'));
@@ -563,41 +564,51 @@ abstract class AbstractEvent implements EventInterface {
 
     $itemized = array();
 
+    $old_month = $this->start_date->format('Y-n');
+
+    $start = TRUE;
+
     // Cycle through each month
     foreach($daterange as $date) {
 
-      $year = $date->format("Y");
-      $dayinterval = new \DateInterval('P1D');
+      // Check if we have
+      if  (($date->format('Y-n') != $old_month) || ($start)) {
 
-      // Handle the first month
-      if ($this->isFirstMonth($date)) {
-        // If we are in the same month the end date is the end date of the event
-        if ($this->isSameMonth()) {
-          $dayrange = new \DatePeriod($this->start_date, $dayinterval, new \DateTime($this->end_date->format("Y-n-j 23:59:59")));
+        $year = $date->format("Y");
+        $dayinterval = new \DateInterval('P1D');
+
+        // Handle the first month
+        if ($this->isFirstMonth($date)) {
+          // If we are in the same month the end date is the end date of the event
+          if ($this->isSameMonth()) {
+            $dayrange = new \DatePeriod($this->start_date, $dayinterval, new \DateTime($this->end_date->format("Y-n-j 23:59:59")));
+          }
+          else { // alternatively it is the last day of the start month
+            $dayrange = new \DatePeriod($this->start_date, $dayinterval, $this->endMonthDate($this->start_date));
+          }
+          foreach ($dayrange as $day) {
+            $itemized[AbstractEvent::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
+          }
         }
-        else { // alternatively it is the last day of the start month
-          $dayrange = new \DatePeriod($this->start_date, $dayinterval, $this->endMonthDate($this->start_date));
+
+        // Handle the last month (will be skipped if event is same month)
+        elseif ($this->isLastMonth($date)) {
+          $dayrange = new \DatePeriod(new \DateTime($date->format("Y-n-1")), $dayinterval, $this->end_date);
+          foreach ($dayrange as $day) {
+            $itemized[AbstractEvent::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
+          }
         }
-        foreach ($dayrange as $day) {
-          $itemized[AbstractEvent::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
+
+        // We are in an in-between month - just cycle through and set dates (time on end date set to ensure it is included)
+        else {
+          $dayrange = new \DatePeriod(new \DateTime($date->format("Y-n-1")), $dayinterval, new \DateTime($date->format("Y-n-t 23:59:59")));
+          foreach ($dayrange as $day) {
+            $itemized[AbstractEvent::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
+          }
         }
       }
-
-      // Handle the last month (will be skipped if event is same month)
-      elseif ($this->isLastMonth($date)) {
-        $dayrange = new \DatePeriod(new \DateTime($date->format("Y-n-1")), $dayinterval, $this->end_date);
-        foreach ($dayrange as $day) {
-          $itemized[AbstractEvent::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
-        }
-      }
-
-      // We are in an in-between month - just cycle through and set dates (time on end date set to ensure it is included)
-      else {
-        $dayrange = new \DatePeriod(new \DateTime($date->format("Y-n-1")), $dayinterval, new \DateTime($date->format("Y-n-t 23:59:59")));
-        foreach ($dayrange as $day) {
-          $itemized[AbstractEvent::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->getValue();
-        }
-      }
+      $start = FALSE;
+      $old_month = $date->format('Y-n');
     }
 
     if ($granularity == AbstractEvent::BAT_HOURLY) {
@@ -609,13 +620,12 @@ abstract class AbstractEvent implements EventInterface {
   }
 
   /**
-   * Saves an event to whatever Drupal tables are defined in the store array
+   * Saves an event using the Store object
    *
-   * @param \ROomify\Bat\\Store\Store $store
+   * @param \Roomify\Bat\\Store\Store $store
    * @param string $granularity
    *
-   * @throws \Exception
-   * @throws \InvalidMergeQueryException
+   * @return boolean
    */
   public function saveEvent(Store $store, $granularity = AbstractEvent::BAT_HOURLY) {
     return $store->storeEvent($this, $granularity);
