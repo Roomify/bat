@@ -11,6 +11,7 @@ use Roomify\Bat\Event\Event;
 use Roomify\Bat\Unit\Unit;
 use Roomify\Bat\Calendar\CalendarInterface;
 use Roomify\Bat\Calendar\CalendarResponse;
+use Roomify\Bat\Event\EventItemizer;
 
 /**
  * Handles querying and updating state stores
@@ -164,7 +165,7 @@ abstract class AbstractCalendar implements CalendarInterface {
     // in the database or the default value we first create a mock event and then fill it in
     // accordingly
     $mock_event = new Event($start_date, $end_date, new Unit(0,0,null), $this->default_value);
-    $itemized = $mock_event->itemizeEvent();
+    $itemized = $mock_event->itemize(new EventItemizer($mock_event));
 
     // Cycle through each unit retrieved and provide it with a fully configured itemized mock event
     foreach ($db_events as $unit => $event) {
@@ -196,7 +197,7 @@ abstract class AbstractCalendar implements CalendarInterface {
       // If we don't have any db events add mock events (itemized)
       foreach ($keyed_units as $id => $unit) {
         $empty_event = new Event($start_date, $end_date, $unit, $unit->getDefaultValue());
-        $events[$id] = $empty_event->itemizeEvent();
+        $events[$id] = $empty_event->itemize(new EventItemizer($empty_event));
       }
     }
 

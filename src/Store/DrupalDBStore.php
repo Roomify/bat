@@ -8,6 +8,7 @@
 namespace Roomify\Bat\Store;
 
 use Roomify\Bat\Event\Event;
+use Roomify\Bat\Event\EventItemizer;
 use Roomify\Bat\Store\SqlDBStore;
 
 /**
@@ -81,7 +82,7 @@ class DrupalDBStore extends SqlDBStore {
 
     try {
       // Itemize an event so we can save it
-      $itemized = $event->itemizeEvent($granularity);
+      $itemized = $event->itemize(new EventItemizer($event, $granularity));
 
       //Write days
       foreach ($itemized[Event::BAT_DAY] as $year => $months) {

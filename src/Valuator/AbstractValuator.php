@@ -101,6 +101,6 @@ abstract class AbstractValuator implements ValuatorInterface {
    * @param $events
    * @return mixed
    */
-  public abstract function determineValue();
+  abstract public function determineValue();
 
 }

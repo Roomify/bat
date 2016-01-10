@@ -5,6 +5,7 @@ namespace Roomify\Bat\Test;
 use Roomify\Bat\Unit\Unit;
 
 use Roomify\Bat\Event\Event;
+use Roomify\Bat\Event\EventItemizer;
 
 class EventTest extends \PHPUnit_Framework_TestCase {
 
@@ -300,9 +301,12 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
   }
 
-
+  /**
+   * @failing
+   */
   public function testEventItemizeEventDifferentDays() {
-    $itemized = $this->event->itemizeEvent();
+
+    $itemized = $this->event->itemize(new EventItemizer($this->event));
 
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['1']['d1'], '-1');
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['1']['d10'], '-1');
@@ -356,7 +360,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
     $event = new Event($start_date, $end_date, $unit, $event_state);
 
-    $itemized = $event->itemizeEvent();
+    $itemized = $event->itemize(new EventItemizer($event));
 
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['1']['d1'], '-1');
 
@@ -374,7 +378,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
     $event = new Event($start_date, $end_date, $unit, $event_state);
 
-    $itemized = $event->itemizeEvent();
+    $itemized = $event->itemize(new EventItemizer($event));
 
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['1']['d1'], '-1');
 
@@ -391,7 +395,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
     $event = new Event($start_date, $end_date, $unit, $event_state);
 
-    $itemized = $event->itemizeEvent();
+    $itemized = $event->itemize(new EventItemizer($event));
 
     // First day should be -1
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['1']['d1'], '-1');
@@ -430,7 +434,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
     $event = new Event($start_date, $end_date, $unit, $event_state);
 
-    $itemized = $event->itemizeEvent();
+    $itemized = $event->itemize(new EventItemizer($event));
 
     // First day should be 5
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['1']['d1'], '5');
@@ -465,7 +469,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
     $event = new Event($start_date, $end_date, $unit, $event_state);
 
-    $itemized = $event->itemizeEvent();
+    $itemized = $event->itemize(new EventItemizer($event));
 
     // First day should be -1
     $this->assertEquals($itemized[Event::BAT_DAY]['2015']['12']['d31'], '-1');
@@ -510,6 +514,5 @@ class EventTest extends \PHPUnit_Framework_TestCase {
     }
 
   }
-
 
 }

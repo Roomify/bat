@@ -30,7 +30,7 @@ interface StoreInterface {
   /**
    * Given an event it will save it and return true if successful.
    *
-   * @param \Roomify\Bat\Event\Event $event
+   * @param \Roomify\Bat\Event\EventInterface $event
    * @param $granularity
    *
    * @return boolean

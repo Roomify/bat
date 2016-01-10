@@ -34,7 +34,7 @@ interface EventInterface {
   public function getStartDate();
 
   /**
-   * Returns the SndDate object
+   * Returns the EndDate object
    *
    * @return \DateTime
    */
@@ -55,7 +55,21 @@ interface EventInterface {
   public function setEndDate(\DateTime $end_date);
 
   /**
-   * Returns the booking start day.
+   * Returns the event value.
+   *
+   * @return int
+   */
+  public function getValue();
+
+  /**
+   * Sets the event value.
+   *
+   * @param int $value
+   */
+  public function setValue($value);
+
+  /**
+   * Returns the start day.
    *
    * @param string $format
    *   The format string to return.
@@ -66,7 +80,7 @@ interface EventInterface {
   public function startDay($format = 'j');
 
   /**
-   * Returns the booking end day.
+   * Returns the end day.
    *
    * @param string $format
    *   The format string to return.
