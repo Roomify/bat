@@ -255,9 +255,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
   }
 
-  /**
-   * @group failing
-   */
   public function testCalendarAddFullDayEvent() {
 
     $u1 = new Unit(1, 10, array());
@@ -287,7 +284,136 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
   }
 
+  public function testCalendarRetrievePeriodLargerThanEventsInDBDescribe() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,20,array());
+    $u3 = new Unit(3,30,array());
+    $u4 = new Unit(4,40,array());
 
+    $units = array($u1, $u2, $u3, $u4);
+
+    $d1 = new \DateTime('2015-12-31 10:00');//new \DateTime('2016-01-01 10:00');//
+
+    $sd1 = new \DateTime('2016-01-01 12:12');
+    $ed1 = new \DateTime('2016-01-01 13:12');
+
+    $sd2 = new \DateTime('2016-01-01 13:12');
+    $ed2 = new \DateTime('2016-01-02 15:29');
+
+    $sd3 = new \DateTime('2016-02-01 12:00');
+    $ed3 = new \DateTime('2016-02-10 14:56');
+
+    $sd4 = new \DateTime('2016-03-02 23:59');
+    $ed4 = new \DateTime('2016-03-15 00:00');
+
+    $d2 = new \DateTime('2016-04-30 12:12');
+
+    // Create 4 events for first unit
+    $e1u1 = new Event($sd1, $ed1, $u1, 11);
+    $e2u1 = new Event($sd2, $ed2, $u1, 111);
+    $e3u1 = new Event($sd3, $ed3, $u1, 1111);
+    $e4u1 = new Event($sd4, $ed4, $u1, 11111);
+
+    // and a few more events
+    $e5u2 = new Event($sd1, $ed2, $u2, 22);
+    $e6u3 = new Event($sd3, $ed4, $u3, 33);
+    // Make the last one longer than the end date of search
+    $e7u4 = new Event($sd1, $ed4->add(new \DateInterval('P80D')), $u4, 44);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    $calendar->addEvents(array($e1u1, $e2u1, $e3u1, $e4u1, $e5u2, $e6u3, $e7u4), Event::BAT_HOURLY);
+
+    $itemized = $calendar->getEventsItemized($d1, $d2);
+    $normalized = $calendar->getEventsNormalized($d1, $d2, $itemized);
+
+    // Check results for Unit 1
+    $this->assertEquals($normalized[1][0]->getStartDate()->format('Y-m-d H:i'), '2015-12-31 10:00');
+    $this->assertEquals($normalized[1][0]->getEndDate()->format('Y-m-d H:i'), '2016-01-01 12:11');
+    $this->assertEquals($normalized[1][0]->getValue(), 10);
+    $this->assertEquals($normalized[1][0]->getUnitId(), 1);
+
+    $this->assertEquals($normalized[1][1]->getStartDate()->format('Y-m-d H:i'), '2016-01-01 12:12');
+    $this->assertEquals($normalized[1][1]->getEndDate()->format('Y-m-d H:i'), '2016-01-01 13:11');
+    $this->assertEquals($normalized[1][1]->getValue(), 11);
+    $this->assertEquals($normalized[1][1]->getUnitId(), 1);
+
+    $this->assertEquals($normalized[1][2]->getStartDate()->format('Y-m-d H:i'), '2016-01-01 13:12');
+    $this->assertEquals($normalized[1][2]->getEndDate()->format('Y-m-d H:i'), '2016-01-02 15:29');
+    $this->assertEquals($normalized[1][2]->getValue(), 111);
+    $this->assertEquals($normalized[1][2]->getUnitId(), 1);
+
+    $this->assertEquals($normalized[1][3]->getStartDate()->format('Y-m-d H:i'), '2016-01-02 15:30');
+    $this->assertEquals($normalized[1][3]->getEndDate()->format('Y-m-d H:i'), '2016-02-01 11:59');
+    $this->assertEquals($normalized[1][3]->getValue(), 10);
+    $this->assertEquals($normalized[1][3]->getUnitId(), 1);
+
+    $this->assertEquals($normalized[1][4]->getStartDate()->format('Y-m-d H:i'), '2016-02-01 12:00');
+    $this->assertEquals($normalized[1][4]->getEndDate()->format('Y-m-d H:i'), '2016-02-10 14:56');
+    $this->assertEquals($normalized[1][4]->getValue(), 1111);
+    $this->assertEquals($normalized[1][4]->getUnitId(), 1);
+
+    $this->assertEquals($normalized[1][5]->getStartDate()->format('Y-m-d H:i'), '2016-02-10 14:57');
+    $this->assertEquals($normalized[1][5]->getEndDate()->format('Y-m-d H:i'), '2016-03-02 23:58');
+    $this->assertEquals($normalized[1][5]->getValue(), 10);
+    $this->assertEquals($normalized[1][5]->getUnitId(), 1);
+
+    $this->assertEquals($normalized[1][6]->getStartDate()->format('Y-m-d H:i'), '2016-03-02 23:59');
+    $this->assertEquals($normalized[1][6]->getEndDate()->format('Y-m-d H:i'), '2016-03-15 00:00');
+    $this->assertEquals($normalized[1][6]->getValue(), 11111);
+    $this->assertEquals($normalized[1][6]->getUnitId(), 1);
+
+    $this->assertEquals($normalized[1][7]->getStartDate()->format('Y-m-d H:i'), '2016-03-15 00:01');
+    $this->assertEquals($normalized[1][7]->getEndDate()->format('Y-m-d H:i'), '2016-04-30 12:12');
+    $this->assertEquals($normalized[1][7]->getValue(), 10);
+    $this->assertEquals($normalized[1][7]->getUnitId(), 1);
+
+    // Check results for Unit 2
+    $this->assertEquals($normalized[2][0]->getStartDate()->format('Y-m-d H:i'), '2015-12-31 10:00');
+    $this->assertEquals($normalized[2][0]->getEndDate()->format('Y-m-d H:i'), '2016-01-01 12:11');
+    $this->assertEquals($normalized[2][0]->getValue(), 20);
+    $this->assertEquals($normalized[2][0]->getUnitId(), 2);
+
+    $this->assertEquals($normalized[2][1]->getStartDate()->format('Y-m-d H:i'), '2016-01-01 12:12');
+    $this->assertEquals($normalized[2][1]->getEndDate()->format('Y-m-d H:i'), '2016-01-02 15:29');
+    $this->assertEquals($normalized[2][1]->getValue(), 22);
+    $this->assertEquals($normalized[2][1]->getUnitId(), 2);
+
+    $this->assertEquals($normalized[2][2]->getStartDate()->format('Y-m-d H:i'), '2016-01-02 15:30');
+    $this->assertEquals($normalized[2][2]->getEndDate()->format('Y-m-d H:i'), '2016-04-30 12:12');
+    $this->assertEquals($normalized[2][2]->getValue(), 20);
+    $this->assertEquals($normalized[2][2]->getUnitId(), 2);
+
+    // Check results for Unit 3
+    $this->assertEquals($normalized[3][0]->getStartDate()->format('Y-m-d H:i'), '2015-12-31 10:00');
+    $this->assertEquals($normalized[3][0]->getEndDate()->format('Y-m-d H:i'), '2016-02-01 11:59');
+    $this->assertEquals($normalized[3][0]->getValue(), 30);
+    $this->assertEquals($normalized[3][0]->getUnitId(), 3);
+
+    $this->assertEquals($normalized[3][1]->getStartDate()->format('Y-m-d H:i'), '2016-02-01 12:00');
+    $this->assertEquals($normalized[3][1]->getEndDate()->format('Y-m-d H:i'), '2016-03-15 00:00');
+    $this->assertEquals($normalized[3][1]->getValue(), 33);
+    $this->assertEquals($normalized[3][1]->getUnitId(), 3);
+
+    $this->assertEquals($normalized[3][2]->getStartDate()->format('Y-m-d H:i'), '2016-03-15 00:01');
+    $this->assertEquals($normalized[3][2]->getEndDate()->format('Y-m-d H:i'), '2016-04-30 12:12');
+    $this->assertEquals($normalized[3][2]->getValue(), 30);
+    $this->assertEquals($normalized[3][2]->getUnitId(), 3);
+
+    // Check results for Unit 4
+    $this->assertEquals($normalized[4][0]->getStartDate()->format('Y-m-d H:i'), '2015-12-31 10:00');
+    $this->assertEquals($normalized[4][0]->getEndDate()->format('Y-m-d H:i'), '2016-01-01 12:11');
+    $this->assertEquals($normalized[4][0]->getValue(), 40);
+    $this->assertEquals($normalized[4][0]->getUnitId(), 4);
+
+    $this->assertEquals($normalized[4][1]->getStartDate()->format('Y-m-d H:i'), '2016-01-01 12:12');
+    $this->assertEquals($normalized[4][1]->getEndDate()->format('Y-m-d H:i'), '2016-04-30 12:12');
+    $this->assertEquals($normalized[4][1]->getValue(), 44);
+    $this->assertEquals($normalized[4][1]->getUnitId(), 4);
+
+  }
 
 
 }
