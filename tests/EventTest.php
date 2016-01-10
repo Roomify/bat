@@ -454,5 +454,62 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
   }
 
+  /**
+   * @group failing
+   */
+  public function testEventItemizeIncludingTwoYearsAndFebruary() {
+    $event_state = 5;
+    $start_date = new \DateTime('2015-12-31 10:00');
+    $end_date = new \DateTime('2016-04-30 12:12');
+    $unit = new Unit(1, 2, array());
+
+    $event = new Event($start_date, $end_date, $unit, $event_state);
+
+    $itemized = $event->itemizeEvent();
+
+    // First day should be -1
+    $this->assertEquals($itemized[Event::BAT_DAY]['2015']['12']['d31'], '-1');
+
+    // Hours 10am to 23pm included should be 5
+    for ($i = 10; $i <=23; $i++) {
+      $this->assertEquals($itemized[Event::BAT_HOUR]['2015']['12']['d31']['h'.$i], '5');
+    }
+
+    // Every day of February should be 5
+    for ($i = 1; $i <=29; $i++) {
+      $this->assertEquals($itemized[Event::BAT_DAY]['2016']['2']['d'.$i], '5');
+    }
+
+    // Every day of March should be 5
+    for ($i = 1; $i <=31; $i++) {
+      $this->assertEquals($itemized[Event::BAT_DAY]['2016']['3']['d'.$i], '5');
+    }
+
+    // The first 29 days of April should be 5
+    for ($i = 1; $i <=29; $i++) {
+      $this->assertEquals($itemized[Event::BAT_DAY]['2016']['4']['d'.$i], '5');
+    }
+
+    // Hours 00am to 11pm included should be 5
+    for ($i = 0; $i <=11; $i++) {
+      $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['4']['d30']['h'.$i], '5');
+    }
+
+    // Hour 12 should be -1
+    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['4']['d30']['h12'], '-1');
+
+    // Minutes 1-12 should be 5
+    for ($i = 0; $i <= 12; $i++) {
+      if ($i <= 9) {
+        $index = 'm0' . $i;
+      }
+      else {
+        $index = 'm' . $i;
+      }
+      $this->assertEquals($itemized[Event::BAT_MINUTE]['2016']['4']['d30']['h12'][$index], '5');
+    }
+
+  }
+
 
 }
