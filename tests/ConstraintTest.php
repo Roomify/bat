@@ -139,4 +139,198 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     $this->assertEquals($valid_unit_ids, array(1, 2));
   }
 
+  /**
+   * Test to String on Checkin Constraint.
+   */
+  public function testToStringCheckInConstraint() {
+    $u1 = new Unit(1,10,array());
+
+    $checkin_day = 1;
+
+    $units = array($u1);
+
+    $sd = new \DateTime('2016-01-01 12:12');
+    $ed = new \DateTime('2016-03-31 18:12');
+
+    $sd1 = new \DateTime('2016-01-02 12:12');
+    $ed1 = new \DateTime('2016-01-10 13:12');
+
+    // Create some event for unit 1
+    $e1u1 = new Event($sd1, $ed1, $u1, 11);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    // Add the events.
+    $calendar->addEvents(array($e1u1), Event::BAT_HOURLY);
+
+    // Constraint with Dates
+    $checkinday_constraint = new CheckInDayConstraint(array($u1), $checkin_day, $sd, $ed);
+    $string = $checkinday_constraint->toString();
+    $this->assertEquals($string['text'], 'From @start_date to @end_date, if booking starts on @day_of_the_week');
+    $this->assertEquals($string['args']['@start_date'], '2016-01-01');
+    $this->assertEquals($string['args']['@end_date'], '2016-03-31');
+    $this->assertEquals($string['args']['@day_of_the_week'], 'Monday');
+    $constraints = array($checkinday_constraint);
+
+    // Constraint without Dates
+    $checkinday_constraint = new CheckInDayConstraint(array($u1), $checkin_day);
+    $string = $checkinday_constraint->toString();
+
+    $this->assertEquals($string['text'], 'If booking starts on @day_of_the_week');
+    $this->assertEquals($string['args']['@day_of_the_week'], 'Monday');
+
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 11), array());
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $this->assertEquals($valid_unit_ids[0], 1);
+
+    // Applying the constraint the unit 1 should be no longer valid.
+    $response->applyConstraints($constraints);
+    $invalid_unit_ids = array_keys($response->getExcluded());
+    $this->assertEquals($invalid_unit_ids[0], 1);
+
+  }
+
+  /**
+   * Test to String on Min Max Days Constraint.
+   */
+  public function testToStringMinMaxDaysConstraint() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+
+    $units = array($u1, $u2);
+
+    $sd = new \DateTime('2016-01-01 15:10');
+    $ed = new \DateTime('2016-06-30 18:00');
+
+    $sd1 = new \DateTime('2016-01-07 02:12');
+    $ed1 = new \DateTime('2016-01-13 13:12');
+
+     // Create some events for units 1,2,3
+    $e1u1 = new Event($sd1, $ed1, $u1, 11);
+    $e1u2 = new Event($sd1, $ed1, $u2, 13);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    // Add the events.
+    $calendar->addEvents(array($e1u1, $e1u2), Event::BAT_HOURLY);
+
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 11, 13), array());
+    $valid_unit_ids = array_keys($response->getIncluded());
+
+    // Unit 1 and 2 should be inside valid unit ids.
+    $this->assertEquals($valid_unit_ids[0], 1);
+    $this->assertEquals($valid_unit_ids[1], 2);
+
+    // Add the constraint with Start and End dates.
+    $minmax_constraint = new MinMaxDaysConstraint(array($u1), 15, 0, $sd, $ed);
+    // Test the toString() method.
+    $string = $minmax_constraint->toString();
+    $constraints = array($minmax_constraint);
+    // Check the string;
+    $this->assertEquals($string['text'], 'From @start_date to @end_date the stay must be for at least @minimum_stay');
+    $response->applyConstraints($constraints);
+    // Now Unit 1 should be not valid.
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $invalid_unit_ids = array_keys($response->getExcluded());
+
+    $this->assertEquals($valid_unit_ids[0], 2);
+    $this->assertEquals($invalid_unit_ids[0], 1);
+
+    // Add the constraint without Start and End dates.
+    $minmax_constraint = new MinMaxDaysConstraint(array($u2), 15);
+    // Test the toString() method.
+    $string = $minmax_constraint->toString();
+    // Check the string.
+    $this->assertEquals($string['text'], 'The stay must be for at least @minimum_stay');
+  
+    $constraints = array($minmax_constraint);
+    $response->applyConstraints($constraints);
+    // Now Unit 2 should be not valid too.
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $invalid_unit_ids = array_keys($response->getExcluded());
+
+    $this->assertEquals($invalid_unit_ids[0], 1);
+    $this->assertEquals($invalid_unit_ids[1], 2);
+
+    // Recreate Response without constraints.
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 11, 13), array());
+  
+    // Add A constraints with the checkin day.
+    $minmax_constraint = new MinMaxDaysConstraint(array($u1), 3, 0, $sd, $ed, 5);
+    // Test the toString() method.
+    $string = $minmax_constraint->toString();
+    $this->assertEquals($string['text'], 'From @start_date to @end_date, if booking starts on @day_of_the_week the stay must be for at least @minimum_stay');
+    $constraints = array($minmax_constraint);
+    $response->applyConstraints($constraints);
+    $valid_unit_ids = array_keys($response->getIncluded());
+
+    $minmax_constraint = new MinMaxDaysConstraint(array($u2), 3, 3, NULL, NULL, 4);
+    // Test the toString() method.
+    $string = $minmax_constraint->toString();
+
+    $this->assertEquals($string['text'], 'If booking starts on @day_of_the_week the stay must be for @minimum_stay');
+    $constraints = array($minmax_constraint);
+    $response->applyConstraints($constraints);
+
+    // Recreate Response without constraints.
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 11, 13), array());
+    // Add A constraints with max days of stay.
+    $minmax_constraint = new MinMaxDaysConstraint(array($u1), 0, 4, $sd, $ed);
+    // Test the toString() method.
+    $string = $minmax_constraint->toString();
+    $this->assertEquals($string['text'], 'From @start_date to @end_date the stay cannot be more than @maximum_stay');
+
+
+    // Recreate Response without constraints.
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 11, 13), array());
+    // Add A constraints with min and max days of stay
+    $minmax_constraint = new MinMaxDaysConstraint(array($u1), 1, 4, $sd, $ed);
+    // Test the toString() method.
+    $string = $minmax_constraint->toString();
+    $this->assertEquals($string['text'], 'From @start_date to @end_date the stay must be at least @minimum_stay and at most @maximum_stay');
+  }
+
+  /**
+   * Test to Constraints Base functionality.
+   */
+  public function testConstraintsBaseFunctions() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+
+    $units = array($u1, $u2);
+
+    $sd = new \DateTime('2016-01-01 15:10');
+    $ed = new \DateTime('2016-06-30 18:00');
+
+    $sd1 = new \DateTime('2016-01-07 02:12');
+    $ed1 = new \DateTime('2016-01-13 13:12');
+
+     // Create some events for units 1,2
+    $e1u1 = new Event($sd1, $ed1, $u1, 11);
+    $e1u2 = new Event($sd1, $ed1, $u2, 13);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    // Add the events.
+    $calendar->addEvents(array($e1u1, $e1u2), Event::BAT_HOURLY);
+
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 11, 13), array());
+
+    // Add the constraint with Start and End dates.
+    $constraint = new MinMaxDaysConstraint(array($u1, $u2), 3, 0, $sd, $ed);
+    $constraint->setStartDate($sd1);
+    $this->assertEquals($constraint->getStartDate(), $sd1);
+
+    $constraint->setEndDate($ed1);
+    $this->assertEquals($constraint->getEndDate(), $ed1);
+
+    $constraint->getAffectedUnits();
+    //var_dump($constraint->getAffectedUnits());
+  }
 }
