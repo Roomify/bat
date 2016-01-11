@@ -7,7 +7,6 @@ use Roomify\Bat\Event\Event;
 use Roomify\Bat\Calendar\Calendar;
 use Roomify\Bat\Store\SqlDBStore;
 use Roomify\Bat\Store\SqlLiteDBStore;
-use Roomify\Bat\Constraint\MinMaxDaysConstraint;
 
 class CalendarTest extends \PHPUnit_Framework_TestCase {
 
@@ -573,17 +572,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     // Try to remove an a nonexistent unit from response.
     $response->removeFromMatched($u3, $reason = 'Just for testing.');
-
-    // Try to add a constraint.
-    $minmax_constraint = new MinMaxDaysConstraint(array($u1), 15);
-    $constraints = array($minmax_constraint);
-
-    $response->applyConstraints($constraints);
-    // Now Unit 1 should be not longer valid.
-    $valid_unit_ids = array_keys($response->getIncluded());
-    $invalid_unit_ids = array_keys($response->getExcluded());
-    $this->assertEquals($invalid_unit_ids[0], 2);
-    $this->assertEquals($invalid_unit_ids[1], 1);
 
   }
 }
