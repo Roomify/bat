@@ -454,7 +454,7 @@ abstract class AbstractEvent implements EventInterface {
    * @return array
    */
   public function itemize($itemizer, $granularity = AbstractEvent::BAT_HOURLY) {
-    $itemized = $itemizer->itemizeEvent();
+    $itemized = $itemizer->itemizeEvent($granularity);
     return $itemized;
   }
 

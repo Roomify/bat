@@ -149,11 +149,11 @@ abstract class AbstractCalendar implements CalendarInterface {
    *
    * @param \DateTime $start_date
    * @param \DateTime $end_date
-   * @param $store
+   * @param String $granularity
    *
    * @return array
    */
-  public function getEventsItemized(\DateTime $start_date, \DateTime $end_date) {
+    public function getEventsItemized(\DateTime $start_date, \DateTime $end_date, $granularity = Event::BAT_HOURLY) {
     // The final events we will return
     $events = array();
 
@@ -165,7 +165,7 @@ abstract class AbstractCalendar implements CalendarInterface {
     // in the database or the default value we first create a mock event and then fill it in
     // accordingly
     $mock_event = new Event($start_date, $end_date, new Unit(0,0,null), $this->default_value);
-    $itemized = $mock_event->itemize(new EventItemizer($mock_event));
+    $itemized = $mock_event->itemize(new EventItemizer($mock_event, $granularity));
 
     // Cycle through each unit retrieved and provide it with a fully configured itemized mock event
     foreach ($db_events as $unit => $event) {
