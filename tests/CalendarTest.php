@@ -7,6 +7,7 @@ use Roomify\Bat\Event\Event;
 use Roomify\Bat\Calendar\Calendar;
 use Roomify\Bat\Store\SqlDBStore;
 use Roomify\Bat\Store\SqlLiteDBStore;
+use Roomify\Bat\Constraint\MinMaxDaysConstraint;
 
 class CalendarTest extends \PHPUnit_Framework_TestCase {
 
@@ -415,5 +416,174 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
   }
 
+  public function testCalendarGetMatchingUnitsWithValidStates() {
 
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+
+    $units = array($u1, $u2);
+
+    $sd = new \DateTime('2016-01-01 12:12');
+    $ed = new \DateTime('2016-03-31 18:12');
+
+    $sd1 = new \DateTime('2016-01-02 12:12');
+    $ed1 = new \DateTime('2016-01-10 13:12');
+
+    $sd2 = new \DateTime('2016-01-16 13:12');
+    $ed2 = new \DateTime('2016-01-20 15:29');
+
+    $sd3 = new \DateTime('2016-01-28 13:12');
+    $ed3 = new \DateTime('2016-02-03 15:29');
+
+    $sd4 = new \DateTime('2016-02-03 18:08');
+    $ed4 = new \DateTime('2016-02-03 21:29');
+
+    // Create some event for unit 1 and 2
+    $e1u1 = new Event($sd1, $ed1, $u1, 11);
+    $e1u2 = new Event($sd1, $ed1, $u2, 13);
+    $e2u1 = new Event($sd2, $ed2, $u1, 11);
+    $e3u1 = new Event($sd4, $ed4, $u1, 11);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    // Add the events.
+    $calendar->addEvents(array($e1u1, $e2u1, $e3u1, $e1u2), Event::BAT_HOURLY);
+
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 11, 17), array());
+
+    $valid_unit_ids = array_keys($response->getIncluded());
+
+    // The result should be the unit 1.
+    $this->assertEquals($valid_unit_ids[0], 1);
+  }
+
+  public function testCalendarGetMatchingUnitsWithInvalidStates() {
+
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+    $u3 = new Unit(3,10,array());
+
+    $units = array($u1, $u2, $u3);
+
+    $sd = new \DateTime('2016-01-01 15:10');
+    $ed = new \DateTime('2016-06-30 18:00');
+
+    $sd1 = new \DateTime('2016-01-07 02:12');
+    $ed1 = new \DateTime('2016-01-13 13:12');
+
+    $sd2 = new \DateTime('2016-01-13 13:14');
+    $ed2 = new \DateTime('2016-01-20 15:29');
+
+    $sd3 = new \DateTime('2016-01-31 13:12');
+    $ed3 = new \DateTime('2016-02-05 15:41');
+
+    $sd4 = new \DateTime('2016-02-11 18:08');
+    $ed4 = new \DateTime('2016-02-28 22:15');
+
+    // Create some event for units 1,2,3
+    $e1u1 = new Event($sd1, $ed1, $u1, 11);
+    $e1u2 = new Event($sd1, $ed1, $u2, 13);
+    $e1u3 = new Event($sd1, $ed1, $u3, 15);
+    $e2u1 = new Event($sd2, $ed2, $u1, 15);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    // Add the events.
+    $calendar->addEvents(array($e1u1, $e1u2, $e1u3, $e2u1), Event::BAT_HOURLY);
+
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 13), array());
+
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $invalid_unit_ids = array_keys($response->getExcluded());
+
+    // Check valid Units.
+    $this->assertEquals($valid_unit_ids[0], 2);
+    // Check invalid states.
+    $this->assertEquals($invalid_unit_ids[0], 1);
+    $this->assertEquals($invalid_unit_ids[1], 3);
+
+    // Try to change valid states.
+    $response_2 = $calendar->getMatchingUnits($sd, $ed, array(10, 15, 11), array());
+
+    $valid_unit_ids_2 = array_keys($response_2->getIncluded());
+    $invalid_unit_ids_2 = array_keys($response_2->getExcluded());
+
+    // Check valid Units.
+    $this->assertEquals($valid_unit_ids_2[0], 1);
+    $this->assertEquals($valid_unit_ids_2[1], 3);
+    // Check invalid states.
+    $this->assertEquals($invalid_unit_ids_2[0], 2);
+
+    // Try to change dates.
+    $response_3 = $calendar->getMatchingUnits($sd1, $ed1, array(10, 11, 15), array());
+    $valid_unit_ids_3 = array_keys($response_3->getIncluded());
+    $invalid_unit_ids_3 = array_keys($response_3->getExcluded());
+
+    // Check valid Units.
+    $this->assertEquals($valid_unit_ids_3[0], 1);
+    $this->assertEquals($valid_unit_ids_3[1], 3);
+    // Check invalid states.
+    $this->assertEquals($invalid_unit_ids_3[0], 2);
+
+  }
+
+  public function testCalendarCalendarResponseFunctions() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+    $u3 = new Unit(3,10,array());
+
+    $units = array($u1, $u2);
+
+    $sd = new \DateTime('2016-01-01 15:10');
+    $ed = new \DateTime('2016-06-30 18:00');
+
+    $sd1 = new \DateTime('2016-01-07 02:12');
+    $ed1 = new \DateTime('2016-01-13 13:12');
+
+     // Create some events for units 1,2,3
+    $e1u1 = new Event($sd1, $ed1, $u1, 11);
+    $e1u2 = new Event($sd1, $ed1, $u2, 13);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    // Add the events.
+    $calendar->addEvents(array($e1u1, $e1u2), Event::BAT_HOURLY);
+
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 11, 13), array());
+
+    $this->assertEquals($response->getStartDate()->format('Y-m-d H:i'), '2016-01-01 15:10');
+    $this->assertEquals($response->getEndDate()->format('Y-m-d H:i'), '2016-06-30 18:00');
+
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $invalid_unit_ids = array_keys($response->getExcluded());
+
+    // Remove the unit 2 from valid unit ids.
+    $response->removeFromMatched($u2, $reason = 'Just for testing.');
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $invalid_unit_ids = array_keys($response->getExcluded());
+
+    // Now the unit 2 should be invalid.
+    $this->assertEquals($invalid_unit_ids[0], 2);
+
+    // Try to remove an a nonexistent unit from response.
+    $response->removeFromMatched($u3, $reason = 'Just for testing.');
+
+    // Try to add a constraint.
+    $minmax_constraint = new MinMaxDaysConstraint(array($u1), 15);
+    $constraints = array($minmax_constraint);
+
+    $response->applyConstraints($constraints);
+    // Now Unit 1 should be not longer valid.
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $invalid_unit_ids = array_keys($response->getExcluded());
+    $this->assertEquals($invalid_unit_ids[0], 2);
+    $this->assertEquals($invalid_unit_ids[1], 1);
+
+  }
 }
