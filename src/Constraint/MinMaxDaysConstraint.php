@@ -107,16 +107,21 @@ class MinMaxDaysConstraint extends Constraint {
     // Day of the week constraint variable.
     $day_of_the_week = $this->getWeekDay($this->checkin_day);
 
+    $start_date = FALSE;
+    $end_date = FALSE;
+
     // Date range constraint variables.
-    $start_date = $this->start_date->format('Y-m-d');
-    $end_date = $this->end_date->format('Y-m-d');
+    if ($this->start_date !== NULL) {
+      $start_date = $this->start_date->format('Y-m-d');
+    }
+    if ($this->start_date !== NULL) {
+      $end_date = $this->end_date->format('Y-m-d');
+    }
 
     // Next create replacement placeholders to be used in t() below.
     $args = array(
       '@minimum_stay' => $minimum_stay,
       '@maximum_stay' => $maximum_stay,
-      '@start_date' => $start_date,
-      '@end_date' => $end_date,
       '@day_of_the_week' => $day_of_the_week,
     );
 
@@ -126,6 +131,8 @@ class MinMaxDaysConstraint extends Constraint {
     // Specify a date range constraint.
     if ($start_date && $end_date) {
       $text = 'From @start_date to @end_date';
+      $args['@start_date'] = $start_date;
+      $args['@end_date'] = $end_date;
     }
 
     // Specify the day of the week constraint.
