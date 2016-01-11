@@ -197,7 +197,7 @@ abstract class AbstractCalendar implements CalendarInterface {
       // If we don't have any db events add mock events (itemized)
       foreach ($keyed_units as $id => $unit) {
         $empty_event = new Event($start_date, $end_date, $unit, $unit->getDefaultValue());
-        $events[$id] = $empty_event->itemize(new EventItemizer($empty_event));
+        $events[$id] = $empty_event->itemize(new EventItemizer($empty_event, $granularity));
       }
     }
 

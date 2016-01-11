@@ -112,10 +112,9 @@ class EventItemizer {
   /**
    * Transforms the event in a breakdown of days, hours and minutes with associated states.
    *
-   * @param $granularity - string
    * @return array
    */
-  public function itemizeEvent($granularity = EventItemizer::BAT_HOURLY) {
+  public function itemizeEvent() {
     // In order to itemize the event we cycle through each day of the event and determine
     // what should go in the DAY array to start with. While we could use P1M this created
     // problems with months like February (because the period is 30 days) so stepping through
@@ -176,7 +175,7 @@ class EventItemizer {
       $old_month = $date->format('Y-n');
     }
 
-    if ($granularity == EventItemizer::BAT_HOURLY) {
+    if ($this->granularity == EventItemizer::BAT_HOURLY) {
       // Add granural info in
       $itemized = $this->createDayGranural($itemized);
     }
