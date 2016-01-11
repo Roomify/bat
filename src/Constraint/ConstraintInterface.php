@@ -42,16 +42,6 @@ interface ConstraintInterface {
   public function getEndDate();
 
   /**
-   * @param $valid_states
-   */
-  public function setValidStates($valid_states);
-
-  /**
-   * @return
-   */
-  public function getValidStates();
-
-  /**
    * @return
    */
   public function getAffectedUnits();

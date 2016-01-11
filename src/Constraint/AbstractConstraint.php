@@ -30,11 +30,6 @@ abstract class AbstractConstraint implements ConstraintInterface {
   /**
    * @var array
    */
-  protected $valid_states;
-
-  /**
-   * @var array
-   */
   protected $affected_units;
 
   /**
@@ -73,20 +68,6 @@ abstract class AbstractConstraint implements ConstraintInterface {
    */
   public function getEndDate() {
     return $this->end_date;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setValidStates($valid_states) {
-    $this->valid_states = $valid_states;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getValidStates() {
-    return $this->valid_states;
   }
 
   /**
