@@ -7,6 +7,8 @@
 
 namespace Roomify\Bat\Event;
 
+use Roomify\Bat\EventFormatter\EventFormatter;
+
 /**
  * The basic BAT event interface.
  */
@@ -276,5 +278,15 @@ interface EventInterface {
    *   The interval between the end and start date.
    */
   public function diff();
+
+
+  /**
+   * Returns the json version of this event.
+   *
+   * @param \Roomify\Bat\Event\EventInterface $event
+   *
+   * @return mixed
+   */
+  public function toJson(EventFormatter $event_formatter);
 
 }
