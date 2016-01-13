@@ -32,7 +32,6 @@ use Roomify\Bat\Unit\Unit;
  * [BAT_DAY][2016][01][d1][-1] - The first day starts at 1210 so the DAY array is not enough
  * [BAT_DAY][2016][01][d2][10] - The second day is a full day at the same value of 10
  * [BAT_DAY][2016][01][d3][-1] - The last day is no a full day so the day array in non-determinant
-
  * [BAT_HOUR][2016][01][d1][h12][-1] - The first hour of the event starts at 10 minutes so the hour is non-determinant
  * [BAT_HOUR][2016][01][d1][h13][10]
  * [BAT_HOUR][2016][01][d1][h14][10]
