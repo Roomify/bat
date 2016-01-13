@@ -105,7 +105,7 @@ abstract class AbstractCalendar implements CalendarInterface {
   }
 
   /**
-   * Given a date range and a set of valid states it will return then units that are withing that
+   * Given a date range and a set of valid states it will return all units within the
    * set of valid states.
    *
    * @param \DateTime $start_date
