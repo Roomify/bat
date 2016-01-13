@@ -50,7 +50,7 @@ class DrupalDBStore extends SqlDBStore {
     // With the day events taken care off let's cycle through hours
     while( $data = $results[Event::BAT_HOUR]->fetchAssoc()) {
       for ($i = 0; $i<=23; $i++) {
-        $db_events[$data['unit_id']][Event::BAT_HOUR][$data['year']][$data['month']][$data['day']]['h'. $i] = $data['h'.$i];
+        $db_events[$data['unit_id']][Event::BAT_HOUR][$data['year']][$data['month']]['d' . $data['day']]['h'. $i] = $data['h'.$i];
       }
     }
 
@@ -63,7 +63,7 @@ class DrupalDBStore extends SqlDBStore {
         else {
           $index = 'm'.$i;
         }
-        $db_events[$data['unit_id']][Event::BAT_MINUTE][$data['year']][$data['month']][$data['day']][$data['hour']][$index] = $data[$index];
+        $db_events[$data['unit_id']][Event::BAT_MINUTE][$data['year']][$data['month']]['d' . $data['day']]['h' . $data['hour']][$index] = $data[$index];
       }
     }
 

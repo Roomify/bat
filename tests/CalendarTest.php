@@ -575,9 +575,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
   }
 
-  /**
-   * @group failing
-   */
   public function testCalendarHourlyEventFullDayRange() {
     $u1 = new Unit(1,10,array());
 
@@ -594,7 +591,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $calendar->addEvents(array($e), Event::BAT_HOURLY);
 
     $events = $calendar->getEvents(new \DateTime('2016-01-18 00:00'), new \DateTime('2016-01-19 00:00'));
-    
+
     // We should get back three events
     $this->assertEquals($events[1][0]->getStartDate()->format('Y-m-d H:i'), '2016-01-18 00:00');
     $this->assertEquals($events[1][0]->getEndDate()->format('Y-m-d H:i'), '2016-01-18 12:20');
