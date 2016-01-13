@@ -574,4 +574,30 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $response->removeFromMatched($u3, $reason = 'Just for testing.');
 
   }
+
+  /**
+   * @group failing
+   */
+  public function testCalendarHourlyEventFullDayRange() {
+    $u1 = new Unit(1,10,array());
+
+    $sd = new \DateTime('2016-01-18 12:21');
+    $ed = new \DateTime('2016-01-18 14:20');
+
+    $e = new Event($sd, $ed, $u1, 10);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar(array($u1), $store);
+
+    // Add the events.
+    $calendar->addEvents(array($e), Event::BAT_HOURLY);
+
+    $events = $calendar->getEvents(new \DateTime('2016-01-18 00:00'), new \DateTime('2016-01-19 00:00'));
+
+    var_dump($events);
+
+
+
+  }
 }
