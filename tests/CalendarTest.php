@@ -584,7 +584,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $sd = new \DateTime('2016-01-18 12:21');
     $ed = new \DateTime('2016-01-18 14:20');
 
-    $e = new Event($sd, $ed, $u1, 10);
+    $e = new Event($sd, $ed, $u1, 5);
 
     $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
 
@@ -594,10 +594,18 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $calendar->addEvents(array($e), Event::BAT_HOURLY);
 
     $events = $calendar->getEvents(new \DateTime('2016-01-18 00:00'), new \DateTime('2016-01-19 00:00'));
+    
+    // We should get back three events
+    $this->assertEquals($events[1][0]->getStartDate()->format('Y-m-d H:i'), '2016-01-18 00:00');
+    $this->assertEquals($events[1][0]->getEndDate()->format('Y-m-d H:i'), '2016-01-18 12:20');
+    $this->assertEquals($events[1][0]->getValue(), 10);
 
-    var_dump($events);
+    $this->assertEquals($events[1][1]->getStartDate()->format('Y-m-d H:i'), '2016-01-18 12:21');
+    $this->assertEquals($events[1][1]->getEndDate()->format('Y-m-d H:i'), '2016-01-18 14:20');
+    $this->assertEquals($events[1][1]->getValue(), 5);
 
-
-
+    $this->assertEquals($events[1][2]->getStartDate()->format('Y-m-d H:i'), '2016-01-18 14:21');
+    $this->assertEquals($events[1][2]->getEndDate()->format('Y-m-d H:i'), '2016-01-19 00:00');
+    $this->assertEquals($events[1][2]->getValue(), 10);
   }
 }

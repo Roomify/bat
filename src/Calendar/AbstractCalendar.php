@@ -153,7 +153,7 @@ abstract class AbstractCalendar implements CalendarInterface {
    *
    * @return array
    */
-    public function getEventsItemized(\DateTime $start_date, \DateTime $end_date, $granularity = Event::BAT_HOURLY) {
+  public function getEventsItemized(\DateTime $start_date, \DateTime $end_date, $granularity = Event::BAT_HOURLY) {
     // The final events we will return
     $events = array();
 
@@ -175,7 +175,7 @@ abstract class AbstractCalendar implements CalendarInterface {
       $events[$unit][Event::BAT_DAY] = $this->itemizeDays($db_events, $itemized, $unit, $keyed_units);
 
       // Handle hours
-      if (isset($itemized[Event::BAT_HOUR])) {
+      if (isset($itemized[Event::BAT_HOUR]) || isset($db_events[$unit][Event::BAT_HOUR])) {
         $events[$unit][Event::BAT_HOUR] = $this->itemizeHours($db_events, $itemized, $unit, $keyed_units);
       } else {
         // No hours - set an empty array
@@ -183,7 +183,7 @@ abstract class AbstractCalendar implements CalendarInterface {
       }
 
       // Handle minutes
-      if (isset($itemized[Event::BAT_MINUTE])) {
+      if (isset($itemized[Event::BAT_MINUTE]) || isset($db_events[$unit][Event::BAT_MINUTE])) {
         $events[$unit][Event::BAT_MINUTE] = $this->itemizeMinutes($db_events, $itemized, $unit, $keyed_units);
       } else {
         // No minutes - set an empty array
@@ -249,16 +249,18 @@ abstract class AbstractCalendar implements CalendarInterface {
 
     $result = array();
 
-    foreach ($itemized[Event::BAT_HOUR] as $year => $months) {
-      foreach ($months as $month => $days) {
-        foreach ($days as $day => $hours) {
-          foreach ($hours as $hour => $value) {
-            if (isset($db_events[$unit][Event::BAT_HOUR][$year][$month][$day][$hour])) {
-              $result[$year][$month][$day][$hour] = ((int) $db_events[$unit][Event::BAT_HOUR][$year][$month][$day][$hour] == 0 ? $keyed_units[$unit]->getDefaultValue() : (int) $db_events[$unit][Event::BAT_HOUR][$year][$month][$day][$hour]);
-            }
-            else {
-              // If nothing from db - then revert to the defaults
-              $result[$year][$month][$day][$hour] = (int) $keyed_units[$unit]->getDefaultValue();
+    if (isset($itemized[Event::BAT_HOUR])) {
+      foreach ($itemized[Event::BAT_HOUR] as $year => $months) {
+        foreach ($months as $month => $days) {
+          foreach ($days as $day => $hours) {
+            foreach ($hours as $hour => $value) {
+              if (isset($db_events[$unit][Event::BAT_HOUR][$year][$month][$day][$hour])) {
+                $result[$year][$month][$day][$hour] = ((int) $db_events[$unit][Event::BAT_HOUR][$year][$month][$day][$hour] == 0 ? $keyed_units[$unit]->getDefaultValue() : (int) $db_events[$unit][Event::BAT_HOUR][$year][$month][$day][$hour]);
+              }
+              else {
+                // If nothing from db - then revert to the defaults
+                $result[$year][$month][$day][$hour] = (int) $keyed_units[$unit]->getDefaultValue();
+              }
             }
           }
         }
@@ -295,17 +297,19 @@ abstract class AbstractCalendar implements CalendarInterface {
   private function itemizeMinutes($db_events, $itemized, $unit, $keyed_units) {
     $result = array();
 
-    foreach ($itemized[Event::BAT_MINUTE] as $year => $months) {
-      foreach ($months as $month => $days) {
-        foreach ($days as $day => $hours) {
-          foreach ($hours as $hour => $minutes) {
-            foreach ($minutes as $minute => $value) {
-              if (isset($db_events[$unit][Event::BAT_MINUTE][$year][$month][$day][$hour][$minute])) {
-                $result[$year][$month][$day][$hour][$minute] = ((int) $db_events[$unit][Event::BAT_MINUTE][$year][$month][$day][$hour][$minute] == 0 ? $keyed_units[$unit]->getDefaultValue() : (int) $db_events[$unit][Event::BAT_MINUTE][$year][$month][$day][$hour][$minute]);
-              }
-              else {
-                // If nothing from db - then revert to the defaults
-                $result[$year][$month][$day][$hour][$minute] = (int) $keyed_units[$unit]->getDefaultValue();
+    if (isset($itemized[Event::BAT_MINUTE])) {
+      foreach ($itemized[Event::BAT_MINUTE] as $year => $months) {
+        foreach ($months as $month => $days) {
+          foreach ($days as $day => $hours) {
+            foreach ($hours as $hour => $minutes) {
+              foreach ($minutes as $minute => $value) {
+                if (isset($db_events[$unit][Event::BAT_MINUTE][$year][$month][$day][$hour][$minute])) {
+                  $result[$year][$month][$day][$hour][$minute] = ((int) $db_events[$unit][Event::BAT_MINUTE][$year][$month][$day][$hour][$minute] == 0 ? $keyed_units[$unit]->getDefaultValue() : (int) $db_events[$unit][Event::BAT_MINUTE][$year][$month][$day][$hour][$minute]);
+                }
+                else {
+                  // If nothing from db - then revert to the defaults
+                  $result[$year][$month][$day][$hour][$minute] = (int) $keyed_units[$unit]->getDefaultValue();
+                }
               }
             }
           }
