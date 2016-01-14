@@ -407,7 +407,7 @@ abstract class AbstractCalendar implements CalendarInterface {
                   // Start event becomes the end event with a minute added
                   $start_event = clone($end_event->add(new \DateInterval('PT1M')));
                   // End event comes the current point in time
-                  $end_event = new \DateTime($year . '-' . $month . '-' . substr($day, 1) . ' ' . substr($hour, 1) . ':00');
+                  $end_event = new \DateTime($year . '-' . $month . '-' . substr($day, 1) . ' ' . substr($hour, 1) . ':59');
                   $current_value = $hour_value;
                 }
                 if ($current_value === NULL) {
