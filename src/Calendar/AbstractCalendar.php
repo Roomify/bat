@@ -164,7 +164,7 @@ abstract class AbstractCalendar implements CalendarInterface {
     // Create a mock itemized event for the period in question - since event data is either
     // in the database or the default value we first create a mock event and then fill it in
     // accordingly
-    $mock_event = new Event($start_date, $end_date, new Unit(0,0,null), $this->default_value);
+    $mock_event = new Event($start_date, $end_date, new Unit(0,0), $this->default_value);
     $itemized = $mock_event->itemize(new EventItemizer($mock_event, $granularity));
 
     // Cycle through each unit retrieved and provide it with a fully configured itemized mock event
