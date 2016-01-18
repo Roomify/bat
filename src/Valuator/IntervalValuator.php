@@ -32,7 +32,7 @@ class IntervalValuator extends AbstractValuator {
 
   protected $duration_unit;
 
-  public function __construct(\DateTime $start_date, \DateTime $end_date, Unit $unit, Store $store, \DateInterval $duration_unit){
+  public function __construct(\DateTime $start_date, \DateTime $end_date, Unit $unit, Store $store, \DateInterval $duration_unit) {
     parent::__construct($start_date, $end_date, $unit, $store);
     $this->duration_unit = $duration_unit;
   }

@@ -80,8 +80,7 @@ class MinMaxDaysConstraint extends Constraint {
             $calendar_response->removeFromMatched($included_set[$unit_id]['unit'], CalendarResponse::CONSTRAINT, $this);
 
             $this->affected_units[$unit_id] = $included_set[$unit_id]['unit'];
-          }
-          elseif (is_numeric($this->max_days) && $diff > $this->max_days) {
+          } elseif (is_numeric($this->max_days) && $diff > $this->max_days) {
             $calendar_response->removeFromMatched($included_set[$unit_id]['unit'], CalendarResponse::CONSTRAINT, $this);
 
             $this->affected_units[$unit_id] = $included_set[$unit_id]['unit'];
@@ -139,8 +138,7 @@ class MinMaxDaysConstraint extends Constraint {
     if ($day_of_the_week) {
       if ($start_date && $end_date) {
         $text = 'From @start_date to @end_date, if booking starts on @day_of_the_week';
-      }
-      else {
+      } else {
         $text = 'If booking starts on @day_of_the_week';
       }
     }
@@ -149,8 +147,7 @@ class MinMaxDaysConstraint extends Constraint {
     if ($minimum_stay || $maximum_stay) {
       if (empty($text)) {
         $text = 'The stay ';
-      }
-      else {
+      } else {
         $text .= ' the stay ';
       }
     }
@@ -158,8 +155,7 @@ class MinMaxDaysConstraint extends Constraint {
       // Special case when min stay and max stay are the same.
       if ($minimum_stay == $maximum_stay) {
         $text .= 'must be for @minimum_stay';
-      }
-      else {
+      } else {
         $text .= 'must be at least @minimum_stay and at most @maximum_stay';
       }
     }

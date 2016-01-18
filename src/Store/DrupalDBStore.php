@@ -59,8 +59,7 @@ class DrupalDBStore extends SqlDBStore {
       for ($i = 0; $i<=59; $i++) {
         if ($i <= 9) {
           $index = 'm0'.$i;
-        }
-        else {
+        } else {
           $index = 'm'.$i;
         }
         $db_events[$data['unit_id']][Event::BAT_MINUTE][$data['year']][$data['month']]['d' . $data['day']]['h' . $data['hour']][$index] = $data[$index];
@@ -139,8 +138,7 @@ class DrupalDBStore extends SqlDBStore {
           }
         }
       }
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       $stored = FALSE;
       $transaction->rollback();
       watchdog_exception('BAT Event Save Exception', $e);

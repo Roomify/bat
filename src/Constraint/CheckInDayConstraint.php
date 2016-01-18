@@ -102,8 +102,7 @@ class CheckInDayConstraint extends Constraint {
     if ($day_of_the_week) {
       if ($start_date && $end_date) {
         $text = 'From @start_date to @end_date, if booking starts on @day_of_the_week';
-      }
-      else {
+      } else {
         $text = 'If booking starts on @day_of_the_week';
       }
 

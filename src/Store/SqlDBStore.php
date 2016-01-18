@@ -103,7 +103,7 @@ abstract class SqlDBStore extends Store {
         $query_parameters .= ' OR ';
       }
       $query_parameters .= 'year IN (' . $year . ') ';
-      $query_parameters .= 'AND month IN (' . implode("," ,array_keys($months)) . ') ';
+      $query_parameters .= 'AND month IN (' . implode(",", array_keys($months)) . ') ';
       if (count($unit_ids) > 0) {
         // Unit ids are defined so add this as a filter
         $query_parameters .= 'AND unit_id in (' . implode("," , $unit_ids) . ') ';

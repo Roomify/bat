@@ -126,8 +126,7 @@ class CalendarResponse {
       unset($this->included_set[$unit->getUnitId()]);
       $this->addMiss($unit, $reason, $constraint);
       return TRUE;
-    }
-    else {
+    } else {
       return FALSE;
     }
   }
