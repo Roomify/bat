@@ -15,7 +15,7 @@ use Roomify\Bat\Event\EventInterval;
 
 /**
  * The IntervalValuator sums the aggregate value of an event by dividing time
- * in discreet intervals (using \DateInterval) and then assigning value to those
+ * in discreet intervals and then assigning value to those
  * intervals based on the value the unit has during that interval.
  *
  * For example, if we are dealing with a hotel room and want to calculate nightly rates
