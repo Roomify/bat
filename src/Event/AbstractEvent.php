@@ -38,7 +38,11 @@ abstract class AbstractEvent implements EventInterface {
   protected $start_date;
 
   /**
-   * The end date for the event.
+   * The end date for the event. Keep in mind that BAT considers a time such as
+   * 1358 to include the entire 58th minute. So what an event that we would describe
+   * as starting at 1300 and ending at 1400 for BAT actually ends at 1359. This is because
+   * (among other reasons) there may well be another event starting at 1400 and two events
+   * next to each other cannot share the same time.
    *
    * @var \DateTime
    */

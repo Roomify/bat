@@ -622,7 +622,5 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $calendar->addEvents(array($e), Event::BAT_HOURLY);
 
     $events = $calendar->getEvents(new \DateTime('2016-01-18 00:00'), new \DateTime('2016-01-19 00:00'));
-
-    var_dump($events);
   }
 }

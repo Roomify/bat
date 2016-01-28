@@ -17,8 +17,8 @@ interface ValuatorInterface {
    * Given a set of events it will determine the value based on the specific
    * implementation
    *
-   * @param $events
-   * @return int value
+   * @return float value
    */
   public function determineValue();
+
 }

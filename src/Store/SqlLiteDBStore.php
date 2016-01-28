@@ -102,13 +102,14 @@ class SqlLiteDBStore extends SqlDBStore {
           // Because SQLite does not have a nice merge first we have to check if a row exists to determine whether to do an insert or an update
           if (isset($existing_events[$event->getUnitId()][EVENT::BAT_DAY][$year][$month])) {
             $command = "UPDATE $this->day_table SET ";
-            foreach ($days as $day => $value){
+            foreach ($days as $day => $value) {
               $command .= "$day = $value,";
             }
             $command = rtrim($command, ',');
             $command .= " WHERE unit_id = " . $event->getUnitId() . " AND year = $year AND month = $month";
             $this->pdo->exec($command);
-          } else {
+          }
+          else {
             $this->pdo->exec("INSERT INTO $this->day_table (unit_id, year, month, " . implode(', ', $keys) . ") VALUES (" . $event->getUnitId() . ", $year, $month, " . implode(', ', $values) . ")");
           }
         }

@@ -331,6 +331,5 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     $this->assertEquals($constraint->getEndDate(), $ed1);
 
     $constraint->getAffectedUnits();
-    //var_dump($constraint->getAffectedUnits());
   }
 }

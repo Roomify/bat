@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Abstract Valuator
+ * Class AbstractValuator
  */
 
 namespace Roomify\Bat\Valuator;
