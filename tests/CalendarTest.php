@@ -29,7 +29,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
   }
 
-
   public function testCalendarAddSingleEvent2UnitsSameHours() {
 
     $u1 = new Unit(1,10,array());
@@ -623,4 +622,26 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     $events = $calendar->getEvents(new \DateTime('2016-01-18 00:00'), new \DateTime('2016-01-19 00:00'));
   }
+
+  public function testCalendarLastDayOfMonth() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,20,array());
+
+    $units = array($u1,$u2);
+
+    $sd1 = new \DateTime('2016-03-31 12:12');
+    $sd2 = new \DateTime('2016-03-31 13:12');
+
+    $e1 = new Event($sd1, $sd2, $u1, 11);
+    $e2 = new Event($sd1, $sd2, $u2, 22);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    $calendar->addEvents(array($e1, $e2), Event::BAT_HOURLY);
+
+    $this->assertEquals($calendar->getStates($sd1, $sd2), array(1 => array(11 => 11), 2 => array(22 => 22)));
+  }
+
 }
