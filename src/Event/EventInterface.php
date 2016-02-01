@@ -283,7 +283,7 @@ interface EventInterface {
   /**
    * Returns the json version of this event.
    *
-   * @param \Roomify\Bat\Event\EventInterface $event
+   * @param \Roomify\Bat\Event\EventFormatter $event_formatter
    *
    * @return mixed
    */
