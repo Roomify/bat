@@ -132,10 +132,10 @@ class EventItemizer {
     $start = TRUE;
 
     // Cycle through each month
-    foreach($daterange as $date) {
+    foreach ($daterange as $date) {
 
       // Check if we have
-      if  (($date->format('Y-n') != $old_month) || ($start)) {
+      if (($date->format('Y-n') != $old_month) || ($start)) {
 
         $year = $date->format("Y");
         $dayinterval = new \DateInterval('P1D');
@@ -145,8 +145,7 @@ class EventItemizer {
           // If we are in the same month the end date is the end date of the event
           if ($this->event->isSameMonth()) {
             $dayrange = new \DatePeriod($this->event->getStartDate(), $dayinterval, new \DateTime($this->event->getEndDate()->format("Y-n-j 23:59:59")));
-          }
-          else { // alternatively it is the last day of the start month
+          } else { // alternatively it is the last day of the start month
             $dayrange = new \DatePeriod($this->event->getStartDate(), $dayinterval, $this->event->endMonthDate($this->event->getStartDate()));
           }
           foreach ($dayrange as $day) {
@@ -221,15 +220,14 @@ class EventItemizer {
         $itemized[EventItemizer::BAT_DAY][$sy][$sm]['d' . $sd] = -1;
         $itemized[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_start[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd];
         $itemized[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_start[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd];
-      }
-      else {
+      } else {
         // Just set an empty hour and minute
         $itemized[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd] = array();
         $itemized[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd] = array();
       }
 
       // Deal with the end date unless it ends just before midnight at which point we don't need to go further
-      if ($this->event->getEndDate()->format('H:i') == '23:59' ) {
+      if ($this->event->getEndDate()->format('H:i') == '23:59') {
         $itemized[EventItemizer::BAT_HOUR][$ey][$em]['d' . $ed] = array();
         $itemized[EventItemizer::BAT_MINUTE][$ey][$em]['d' . $ed] = array();
       } else {
@@ -257,11 +255,11 @@ class EventItemizer {
 
     $counter = (int)$period_start->format('i');
     $start_minute = $counter;
-    foreach($period as $minute) {
+    foreach ($period as $minute) {
       // Doing minutes so set the values in the minute array
-      $itemized[EventItemizer::BAT_MINUTE][$minute->format('Y')][$minute->format('n')]['d'. $minute->format('j')]['h'. $minute->format('G')]['m' .$minute->format('i')] = $this->event->getValue();
+      $itemized[EventItemizer::BAT_MINUTE][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')]['m' . $minute->format('i')] = $this->event->getValue();
       // Let the hours know that it cannot determine availability
-      $itemized[EventItemizer::BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d'. $minute->format('j')]['h'. $minute->format('G')] = -1;
+      $itemized[EventItemizer::BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')] = -1;
       $counter++;
 
       if ($counter == 60 && $start_minute!==0) {
@@ -273,7 +271,7 @@ class EventItemizer {
         // Did a real whole hour so initialize the hour
         $itemized[EventItemizer::BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')] = $this->event->getValue();
         // We have a whole hour so get rid of the minute info
-        unset($itemized[EventItemizer::BAT_MINUTE][$minute->format('Y')][$minute->format('n')]['d'. $minute->format('j')]['h'. $minute->format('G')]);
+        unset($itemized[EventItemizer::BAT_MINUTE][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')]);
         $counter = 0;
         $start_minute = 0;
       }

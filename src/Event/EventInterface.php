@@ -215,7 +215,7 @@ interface EventInterface {
 
   /**
    * Returns TRUE if the date supplied is the first month of the event
-   * @param $date
+   * @param \DateTime $date
    *
    * @return bool
    */
@@ -231,7 +231,7 @@ interface EventInterface {
 
   /**
    * Returns TRUE if the date supplied is the last month of the event
-   * @param $date
+   * @param \DateTime $date
    *
    * @return bool
    */
