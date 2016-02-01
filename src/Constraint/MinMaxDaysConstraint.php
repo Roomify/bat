@@ -158,11 +158,9 @@ class MinMaxDaysConstraint extends Constraint {
       } else {
         $text .= 'must be at least @minimum_stay and at most @maximum_stay';
       }
-    }
-    elseif ($minimum_stay) {
+    } elseif ($minimum_stay) {
       $text .= 'must be for at least @minimum_stay';
-    }
-    elseif ($maximum_stay) {
+    } elseif ($maximum_stay) {
       $text .= 'cannot be more than @maximum_stay';
     }
 
