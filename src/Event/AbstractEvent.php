@@ -95,7 +95,7 @@ abstract class AbstractEvent implements EventInterface {
   /**
    * Returns the start date.
    *
-   * @return DateTime
+   * @return \DateTime
    */
   public function getStartDate() {
     return clone($this->start_date);
@@ -112,7 +112,7 @@ abstract class AbstractEvent implements EventInterface {
   /**
    * Set the start date.
    *
-   * @param DateTime $start_date
+   * @param \DateTime $start_date
    */
   public function setStartDate(\DateTime $start_date) {
     $this->start_date = clone($start_date);
@@ -121,7 +121,7 @@ abstract class AbstractEvent implements EventInterface {
   /**
    * Returns the end date.
    *
-   * @return DateTime
+   * @return \DateTime
    */
   public function getEndDate() {
     return clone($this->end_date);
@@ -138,7 +138,7 @@ abstract class AbstractEvent implements EventInterface {
   /**
    * Set the end date.
    *
-   * @param DateTime $end_date
+   * @param \DateTime $end_date
    */
   public function setEndDate(\DateTime $end_date) {
     $this->end_date = clone($end_date);
