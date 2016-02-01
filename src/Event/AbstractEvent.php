@@ -347,8 +347,7 @@ abstract class AbstractEvent implements EventInterface {
     if ($this->dateIsEarlier($start) &&
       ($this->dateIsInRange($end) || $this->dateIsLater($end))) {
       $overlaps = TRUE;
-    }
-    elseif ($this->dateIsInRange($start) &&
+    } elseif ($this->dateIsInRange($start) &&
       ($this->dateIsInRange($end) || $this->dateIsLater($end))) {
       $overlaps = TRUE;
     }
