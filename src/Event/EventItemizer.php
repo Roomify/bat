@@ -211,8 +211,7 @@ class EventItemizer {
         $itemized[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_same_day[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd];
         $itemized[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_same_day[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd];
       }
-    }
-    else {
+    } else {
       // Deal with the start day unless it starts on midnight precisely at which point the whole day is booked
       if (!($this->event->getStartDate()->format('H:i') == '00:00')) {
         $start_period = new \DatePeriod($start_date, $interval, new \DateTime($start_date->format("Y-n-j 23:59:59")));
@@ -262,7 +261,7 @@ class EventItemizer {
       $itemized[EventItemizer::BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')] = -1;
       $counter++;
 
-      if ($counter == 60 && $start_minute!==0) {
+      if ($counter == 60 && $start_minute !== 0) {
         // Not a real hour - leave as is and move on
         $counter = 0;
         $start_minute = 0;

@@ -455,6 +455,7 @@ abstract class AbstractEvent implements EventInterface {
   /**
    * Transforms the event in a breakdown of days, hours and minutes with associated states.
    *
+   * @param EventItemizer $itemizer
    * @return array
    */
   public function itemize($itemizer) {
@@ -465,7 +466,7 @@ abstract class AbstractEvent implements EventInterface {
   /**
    * Saves an event using the Store object
    *
-   * @param \Roomify\Bat\\Store\Store $store
+   * @param Store $store
    * @param string $granularity
    *
    * @return boolean
