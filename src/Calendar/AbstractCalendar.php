@@ -144,6 +144,45 @@ abstract class AbstractCalendar implements CalendarInterface {
   }
 
   /**
+   * Given a date range and a set of valid states it will return all units within the
+   * set of valid states.
+   *
+   * @param \DateTime $start_date
+   * @param \DateTime $end_date
+   * @param $valid_states
+   *
+   * @return CalendarResponse
+   */
+  public function getMatchingUnitsIntersect(\DateTime $start_date, \DateTime $end_date, $valid_states, $constraints) {
+    $units = array();
+    $response = new CalendarResponse($start_date, $end_date, $valid_states);
+    $keyed_units = $this->keyUnitsById();
+
+    $states = $this->getStates($start_date, $end_date);
+    foreach ($states as $unit => $unit_states) {
+      // Create an array with just the states
+      $current_states = array_keys($unit_states);
+      // Compare the current states with the set of valid states
+      $remaining_states = array_intersect($current_states, $valid_states);
+      if (count($remaining_states) > 0) {
+        // Unit is in a state that is within the set of valid states so add to result set
+        $units[$unit] = $unit;
+        $response->addMatch($keyed_units[$unit], CalendarResponse::VALID_STATE);
+      }
+      else {
+        $response->addMiss($keyed_units[$unit], CalendarResponse::INVALID_STATE);
+      }
+
+      $unit_constraints = $keyed_units[$unit]->getConstraints();
+      $response->applyConstraints($unit_constraints);
+    }
+
+    $response->applyConstraints($constraints);
+
+    return $response;
+  }
+
+  /**
    * Provides an itemized array of events keyed by the unit_id and divided by day,
    * hour and minute.
    *
