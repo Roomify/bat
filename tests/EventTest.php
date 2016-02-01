@@ -301,9 +301,6 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
   }
 
-  /**
-   * @failing
-   */
   public function testEventItemizeEventDifferentDays() {
 
     $itemized = $this->event->itemize(new EventItemizer($this->event));
@@ -458,9 +455,6 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
   }
 
-  /**
-   * @group failing
-   */
   public function testEventItemizeIncludingTwoYearsAndFebruary() {
     $event_state = 5;
     $start_date = new \DateTime('2015-12-31 10:00');

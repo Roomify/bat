@@ -120,8 +120,13 @@ class EventItemizer {
     // each day is safer.
     $interval = new \DateInterval('P1D');
 
-    // Set the end date to the last day of the month so that we are sure to get that last month
-    $adjusted_end_day = new \DateTime($this->event->getEndDate()->format('Y-n-t'));
+    // Set the end date to the last day of the month so that we are sure to get that last month unless
+    // we are already dealing with the last day of the month
+    if ($this->event->getEndDate()->format('d') != $this->event->getEndDate()->format('t')) {
+      $adjusted_end_day = new \DateTime($this->event->getEndDate()->format('Y-n-t'));
+    } else {
+      $adjusted_end_day = new \DateTime($this->event->getEndDate()->format('Y-m-d H:i'));
+    }
 
     $daterange = new \DatePeriod($this->event->getStartDate(), $interval, $adjusted_end_day);
 
