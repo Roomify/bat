@@ -26,11 +26,9 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
       $this->pdo->exec(SetupStore::createMinuteTable('availability_event', 'event'));
       $this->pdo->exec(SetupStore::createMinuteTable('availability_event', 'state'));
     }
-
   }
 
   public function testCalendarAddSingleEvent2UnitsSameHours() {
-
     $u1 = new Unit(1,10,array());
     $u2 = new Unit(2,20,array());
 
@@ -127,11 +125,9 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($normalized[2][1]->getEndDate()->format('Y-m-d H:i'), '2016-01-01 13:12');
     $this->assertEquals($normalized[2][1]->getValue(), 22);
     $this->assertEquals($normalized[2][1]->getUnitId(), 2);
-
   }
 
   public function testCalendarRetrieveWithEmptyDB() {
-
     $u1 = new Unit(1, 10, array());
     $u2 = new Unit(2, 20, array());
 
@@ -223,11 +219,9 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($normalized[2][0]->getEndDate()->format('Y-m-d H:i'), '2016-01-01 13:12');
     $this->assertEquals($normalized[2][0]->getValue(), 20);
     $this->assertEquals($normalized[2][0]->getUnitId(), 2);
-
   }
 
   public function testCalendarRetrieveEventSpanningYears() {
-
     $u1 = new Unit(1, 10, array());
 
     $units = array($u1);
@@ -251,11 +245,9 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($normalized[1][1]->getEndDate()->format('Y-m-d H:i'), '2020-01-01 13:12');
     $this->assertEquals($normalized[1][1]->getValue(), 11);
     $this->assertEquals($normalized[1][1]->getUnitId(), 1);
-
   }
 
   public function testCalendarAddFullDayEvent() {
-
     $u1 = new Unit(1, 10, array());
 
     $units = array($u1);
@@ -280,7 +272,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($normalized[1][0]->getEndDate()->format('Y-m-d H:i'), '2016-01-01 23:59');
     $this->assertEquals($normalized[1][0]->getValue(), 11);
     $this->assertEquals($normalized[1][0]->getUnitId(), 1);
-
   }
 
   public function testCalendarRetrievePeriodLargerThanEventsInDBDescribe() {
@@ -411,11 +402,9 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($normalized[4][1]->getEndDate()->format('Y-m-d H:i'), '2016-04-30 12:12');
     $this->assertEquals($normalized[4][1]->getValue(), 44);
     $this->assertEquals($normalized[4][1]->getUnitId(), 4);
-
   }
 
   public function testCalendarGetMatchingUnitsWithValidStates() {
-
     $u1 = new Unit(1,10,array());
     $u2 = new Unit(2,10,array());
 
@@ -458,7 +447,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
   }
 
   public function testCalendarGetMatchingUnitsWithInvalidStates() {
-
     $u1 = new Unit(1,10,array());
     $u2 = new Unit(2,10,array());
     $u3 = new Unit(3,10,array());
@@ -526,7 +514,51 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($valid_unit_ids_3[1], 3);
     // Check invalid states.
     $this->assertEquals($invalid_unit_ids_3[0], 2);
+  }
 
+  public function testCalendarGetMatchingUnitsIntersect() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+    $u3 = new Unit(3,10,array());
+
+    $units = array($u1, $u2, $u3);
+
+    $sd = new \DateTime('2016-01-01 15:10');
+    $ed = new \DateTime('2016-06-30 18:00');
+
+    $sd1 = new \DateTime('2016-01-07 02:12');
+    $ed1 = new \DateTime('2016-01-13 13:12');
+
+    $sd2 = new \DateTime('2016-01-13 13:14');
+    $ed2 = new \DateTime('2016-01-20 15:29');
+
+    $sd3 = new \DateTime('2016-01-31 13:12');
+    $ed3 = new \DateTime('2016-02-05 15:41');
+
+    $sd4 = new \DateTime('2016-02-11 18:08');
+    $ed4 = new \DateTime('2016-02-28 22:15');
+
+    // Create some event for units 1,2,3
+    $e1u1 = new Event($sd1, $ed1, $u1, 11);
+    $e1u2 = new Event($sd1, $ed1, $u2, 13);
+    $e1u3 = new Event($sd1, $ed1, $u3, 15);
+    $e2u1 = new Event($sd2, $ed2, $u1, 15);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    // Add the events.
+    $calendar->addEvents(array($e1u1, $e1u2, $e1u3, $e2u1), Event::BAT_HOURLY);
+
+    $response = $calendar->getMatchingUnitsIntersect($sd, $ed, array(10, 13), array());
+    $this->assertEquals(count($response->getIncluded()), 3);
+
+    $response = $calendar->getMatchingUnitsIntersect($sd, $ed, array(15), array());
+    $this->assertEquals(count($response->getIncluded()), 2);
+
+    $response = $calendar->getMatchingUnitsIntersect($sd, $ed, array(13), array());
+    $this->assertEquals(count($response->getIncluded()), 1);
   }
 
   public function testCalendarCalendarResponseFunctions() {
@@ -571,7 +603,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     // Try to remove an a nonexistent unit from response.
     $response->removeFromMatched($u3, $reason = 'Just for testing.');
-
   }
 
   public function testCalendarHourlyEventFullDayRange() {
