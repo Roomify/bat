@@ -551,13 +551,13 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     // Add the events.
     $calendar->addEvents(array($e1u1, $e1u2, $e1u3, $e2u1), Event::BAT_HOURLY);
 
-    $response = $calendar->getMatchingUnitsIntersect($sd, $ed, array(10, 13), array());
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 13), array(), TRUE);
     $this->assertEquals(count($response->getIncluded()), 3);
 
-    $response = $calendar->getMatchingUnitsIntersect($sd, $ed, array(15), array());
+    $response = $calendar->getMatchingUnits($sd, $ed, array(15), array(), TRUE);
     $this->assertEquals(count($response->getIncluded()), 2);
 
-    $response = $calendar->getMatchingUnitsIntersect($sd, $ed, array(13), array());
+    $response = $calendar->getMatchingUnits($sd, $ed, array(13), array(), TRUE);
     $this->assertEquals(count($response->getIncluded()), 1);
   }
 
