@@ -44,7 +44,7 @@ abstract class AbstractUnit implements UnitInterface {
    * {@inheritdoc}
    */
   public function getDefaultValue() {
-    return $this->default_value;
+    return (int) $this->default_value;
   }
 
   /**

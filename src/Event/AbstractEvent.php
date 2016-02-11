@@ -62,7 +62,7 @@ abstract class AbstractEvent implements EventInterface {
    * @return int
    */
   public function getValue() {
-    return $this->value;
+    return (int) $this->value;
   }
 
   /**

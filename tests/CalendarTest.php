@@ -635,24 +635,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($events[1][2]->getEndDate()->format('Y-m-d H:i'), '2016-01-19 00:00');
     $this->assertEquals($events[1][2]->getValue(), 10);
   }
-  
-  public function testFullHourEvent() {
-    $u1 = new Unit(1,10,array());
-
-    $sd = new \DateTime('2016-01-18 12:00');
-    $ed = new \DateTime('2016-01-18 15:59');
-
-    $e = new Event($sd, $ed, $u1, 5);
-
-    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
-
-    $calendar = new Calendar(array($u1), $store);
-
-    // Add the events.
-    $calendar->addEvents(array($e), Event::BAT_HOURLY);
-
-    $events = $calendar->getEvents(new \DateTime('2016-01-18 00:00'), new \DateTime('2016-01-19 00:00'));
-  }
 
   public function testCalendarLastDayOfMonth() {
     $u1 = new Unit(1,10,array());
