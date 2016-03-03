@@ -365,8 +365,8 @@ abstract class AbstractCalendar implements CalendarInterface {
 
       // Make sure years are sorted
       ksort($data[Event::BAT_DAY]);
-      ksort($data[Event::BAT_HOUR]);
-      ksort($data[Event::BAT_MINUTE]);
+      if (isset($data[Event::BAT_HOUR])) ksort($data[Event::BAT_HOUR]);
+      if (isset($data[Event::BAT_MINUTE])) ksort($data[Event::BAT_MINUTE]);
 
       // Set up variables to keep track of stuff
       $current_value = NULL;
