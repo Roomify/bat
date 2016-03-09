@@ -509,4 +509,18 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
   }
 
+  public function testEndOfMonthEventItemization() {
+    $event_state = 5;
+    $start_date = new \DateTime('2016-04-30 00:00');
+    $end_date = new \DateTime('2016-04-30 00:00');
+    $unit = new Unit(1, 2, array());
+
+    $event = new Event($start_date, $end_date, $unit, $event_state);
+
+    $mock_event = $event->itemize(new EventItemizer($event, Event::BAT_DAILY));
+
+    // First day should be -1
+    $this->assertEquals($mock_event[Event::BAT_DAY]['2016']['4']['d30'], '5');
+  }
+
 }

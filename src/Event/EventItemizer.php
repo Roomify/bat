@@ -124,7 +124,13 @@ class EventItemizer {
     // we are already dealing with the last day of the month
     if ($this->event->getEndDate()->format('d') != $this->event->getEndDate()->format('t')) {
       $adjusted_end_day = new \DateTime($this->event->getEndDate()->format('Y-n-t'));
-    } else {
+    }
+    // Deal with the special case of last day of month and daily granularity where the DatePeriod will not indicate one day unless the time is slightly different
+    // We add a minute to compensate
+    elseif (($this->event->getStartDate()->format('Y-m-d H:i') == $this->event->getEndDate()->format('Y-m-d H:i')) && $this->granularity == EventItemizer::BAT_DAILY) {
+      $adjusted_end_day = new \DateTime($this->event->getEndDate()->add(new \DateInterval('PT1M'))->format('Y-m-d H:i'));
+    }
+    else {
       $adjusted_end_day = new \DateTime($this->event->getEndDate()->format('Y-m-d H:i'));
     }
 
