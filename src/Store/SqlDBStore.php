@@ -54,20 +54,20 @@ abstract class SqlDBStore extends Store {
    * @param $event_type
    * @param string $event_data
    */
-  public function __construct($event_type, $event_data = 'state') {
+  public function __construct($event_type, $event_data = 'state', $prefix = '') {
 
     $this->event_type = $event_type;
 
     if ($event_data == SqlDBStore::BAT_STATE) {
-      $this->day_table = 'bat_event_' . $event_type . '_day_' . SqlDBStore::BAT_STATE;
-      $this->hour_table = 'bat_event_' . $event_type . '_hour_' . SqlDBStore::BAT_STATE;
-      $this->minute_table = 'bat_event_' . $event_type . '_minute_' . SqlDBStore::BAT_STATE;
+      $this->day_table = $prefix . 'bat_event_' . $event_type . '_day_' . SqlDBStore::BAT_STATE;
+      $this->hour_table = $prefix . 'bat_event_' . $event_type . '_hour_' . SqlDBStore::BAT_STATE;
+      $this->minute_table = $prefix . 'bat_event_' . $event_type . '_minute_' . SqlDBStore::BAT_STATE;
     }
 
     if ($event_data == SqlDBStore::BAT_EVENT) {
-      $this->day_table = 'bat_event_' . $event_type . '_day_' . SqlDBStore::BAT_EVENT;
-      $this->hour_table = 'bat_event_' . $event_type . '_hour_' . SqlDBStore::BAT_EVENT;
-      $this->minute_table = 'bat_event_' . $event_type . '_minute_' . SqlDBStore::BAT_EVENT;
+      $this->day_table = $prefix . 'bat_event_' . $event_type . '_day_' . SqlDBStore::BAT_EVENT;
+      $this->hour_table = $prefix . 'bat_event_' . $event_type . '_hour_' . SqlDBStore::BAT_EVENT;
+      $this->minute_table = $prefix . 'bat_event_' . $event_type . '_minute_' . SqlDBStore::BAT_EVENT;
     }
 
   }
