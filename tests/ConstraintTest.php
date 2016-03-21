@@ -13,6 +13,7 @@ use Roomify\Bat\Store\SqlLiteDBStore;
 
 use Roomify\Bat\Constraint\MinMaxDaysConstraint;
 use Roomify\Bat\Constraint\CheckInDayConstraint;
+use Roomify\Bat\Constraint\DateConstraint;
 
 class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
 
@@ -155,7 +156,7 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     $sd1 = new \DateTime('2016-01-02 12:12');
     $ed1 = new \DateTime('2016-01-10 13:12');
 
-    // Create some event for unit 1
+    // Create an event for unit 1.
     $e1u1 = new Event($sd1, $ed1, $u1, 11);
 
     $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
@@ -190,6 +191,60 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     $invalid_unit_ids = array_keys($response->getExcluded());
     $this->assertEquals($invalid_unit_ids[0], 1);
 
+  }
+
+  /**
+   * Test to String on Date Constraint.
+   */
+  public function testToStringDateConstraint() {
+    $u1 = new Unit(1,10,array());
+
+    $checkin_day = 1;
+
+    $units = array($u1);
+
+    // Imagine we are testing on 2016-01-01, and do not allow creating an event
+    // until 2 days from now, and not after six months.
+    $sd = new \DateTime('2016-01-03 00:00');
+    $ed = new \DateTime('2016-06-01 00:00');
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    // Constraint with Dates
+    $date_constraint = new DateConstraint(array($u1), $sd, $ed);
+    $string = $date_constraint->toString();
+    $this->assertEquals($string['text'], 'From @start_date to @end_date');
+    $this->assertEquals($string['args']['@start_date'], '2016-01-03');
+    $this->assertEquals($string['args']['@end_date'], '2016-06-01');
+    $constraints = array($date_constraint);
+
+    // Test an event starting on the second.
+    $sd1 = new \DateTime('2016-01-02 12:00');
+    $ed1 = new \DateTime('2016-01-10 13:12');
+
+    $response = $calendar->getMatchingUnits($sd1, $ed1, array(10, 11), array());
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $this->assertEquals($valid_unit_ids[0], 1);
+
+    // Applying the constraint the unit 1 should be no longer valid.
+    $response->applyConstraints($constraints);
+    $invalid_unit_ids = array_keys($response->getExcluded());
+    $this->assertEquals($invalid_unit_ids[0], 1);
+
+    // Test an event ending in July.
+    $sd1 = new \DateTime('2016-05-02 12:00');
+    $ed1 = new \DateTime('2016-07-10 13:12');
+
+    $response = $calendar->getMatchingUnits($sd1, $ed1, array(10, 11), array());
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $this->assertEquals($valid_unit_ids[0], 1);
+
+    // Applying the constraint the unit 1 should be no longer valid.
+    $response->applyConstraints($constraints);
+    $invalid_unit_ids = array_keys($response->getExcluded());
+    $this->assertEquals($invalid_unit_ids[0], 1);
   }
 
   /**
