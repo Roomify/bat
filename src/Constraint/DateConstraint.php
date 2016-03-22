@@ -11,12 +11,28 @@ use Roomify\Bat\Calendar\CalendarResponse;
 use Roomify\Bat\Constraint\Constraint;
 
 /**
+ * The DateConstraint provides a generalized constraint on the start and end time
+ * of an event.
  *
+ * An applicable scenario is to allow units to declare (independently of
+ * their actual event state) whether they should be deemed as matching a search
+ * based on the dates of the search. For example, a hotel room can declare that it
+ * should be unavailable if the check-in time is not at least 2 days away from the
+ * today.
  */
 class DateConstraint extends Constraint {
 
+  // The constraint start date - if on or after requested start date constraint will apply
+  public $start_date;
+
+  // The constraint end date - if on or after requested end date constraint will apply
+  public $end_date;
+
   /**
-   * @param $units
+   * DateConstraint constructor.
+   * @param array $units
+   * @param null $start_date
+   * @param null $end_date
    */
   public function __construct($units, $start_date = NULL, $end_date = NULL) {
     parent::__construct($units);
