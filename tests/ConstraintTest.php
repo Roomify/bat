@@ -141,6 +141,44 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
   }
 
   /**
+   * Test Constraint.
+   */
+  public function testDateConstraint() {
+    $start_date = new \DateTime('2016-01-02 12:12');
+    $end_date = new \DateTime('2016-01-04 07:07');
+
+    $state_store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+    $event_store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_EVENT);
+
+    $unit1 = new Unit(1, 2, array());
+    $unit2 = new Unit(2, 2, array());
+
+    $units = array($unit1, $unit2);
+
+    $state_calendar = new Calendar($units, $state_store);
+    $event_calendar = new Calendar($units, $event_store);
+
+    $sd1 = new \DateTime('2016-01-01 12:12');
+    $ed1 = new \DateTime('2016-01-05 13:12');
+    $date_constraint = new DateConstraint(array(), $sd1, $ed1);
+    $constraints = array($date_constraint);
+
+    $valid_states = array(2);
+    $response = $state_calendar->getMatchingUnits($start_date, $end_date, $valid_states, $constraints);
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $this->assertEquals($valid_unit_ids, array(1, 2));
+
+    $sd1 = new \DateTime('2015-01-02 13:12');
+    $ed1 = new \DateTime('2016-01-03 13:12');
+    $date_constraint = new DateConstraint(array(), $sd1, $ed1);
+    $constraints = array($date_constraint);
+
+    $response = $state_calendar->getMatchingUnits($start_date, $end_date, $valid_states, $constraints);
+    $valid_unit_ids = array_keys($response->getIncluded());
+    $this->assertEquals($valid_unit_ids, array());
+  }
+
+  /**
    * Test to String on Checkin Constraint.
    */
   public function testToStringCheckInConstraint() {
