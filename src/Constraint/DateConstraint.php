@@ -22,10 +22,10 @@ use Roomify\Bat\Constraint\Constraint;
  */
 class DateConstraint extends Constraint {
 
-  // The constraint start date - if on or after requested start date constraint will apply
+  // The constraint start date - if on or after requested start date constraint will apply.
   public $start_date;
 
-  // The constraint end date - if on or after requested end date constraint will apply
+  // The constraint end date - if on or after requested end date constraint will apply.
   public $end_date;
 
   /**
