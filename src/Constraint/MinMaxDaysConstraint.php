@@ -62,9 +62,13 @@ class MinMaxDaysConstraint extends Constraint {
       $this->end_date = new \DateTime('2999-12-31');
     }
 
-    if ($this->start_date->getTimestamp() <= $calendar_response->getStartDate()->getTimestamp() &&
-        $this->end_date->getTimestamp() >= $calendar_response->getEndDate()->getTimestamp() &&
-        ($this->checkin_day === NULL || $this->checkin_day == $calendar_response->getStartDate()->format('N'))) {
+    if ( (($calendar_response->getStartDate()->getTimestamp() >= $this->start_date->getTimestamp() &&
+           $calendar_response->getStartDate()->getTimestamp() <= $this->end_date->getTimestamp()) ||
+          ($calendar_response->getEndDate()->getTimestamp() >= $this->start_date->getTimestamp() &&
+           $calendar_response->getEndDate()->getTimestamp() <= $this->end_date->getTimestamp()) ||
+          ($calendar_response->getStartDate()->getTimestamp() <= $this->start_date->getTimestamp() &&
+           $calendar_response->getEndDate()->getTimestamp() >= $this->end_date->getTimestamp())) &&
+         ($this->checkin_day === NULL || $this->checkin_day == $calendar_response->getStartDate()->format('N')) ) {
 
       $units = $this->getUnits();
 
