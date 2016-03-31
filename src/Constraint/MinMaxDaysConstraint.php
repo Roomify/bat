@@ -104,8 +104,8 @@ class MinMaxDaysConstraint extends Constraint {
     $text = '';
 
     // Min/max stay length constraint variables.
-    $minimum_stay = empty($this->min_days) ? '' : (($this->min_days == 1) ? '@count day' : '@count days');
-    $maximum_stay = empty($this->max_days) ? '' : (($this->max_days == 1) ? '@count day' : '@count days');
+    $minimum_stay = empty($this->min_days) ? '' : (($this->min_days == 1) ? $this->min_days . ' day' : $this->min_days . ' days');
+    $maximum_stay = empty($this->max_days) ? '' : (($this->max_days == 1) ? $this->max_days . ' day' : $this->max_days . ' days');
 
     // Day of the week constraint variable.
     $day_of_the_week = $this->getWeekDay($this->checkin_day);
