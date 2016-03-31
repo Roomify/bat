@@ -132,4 +132,18 @@ class CheckInDayConstraint extends Constraint {
     return isset($weekdays[$day]) ? $weekdays[$day] : '';
   }
 
+  /**
+   * @return int
+   */
+  public function getCheckinDay() {
+    return $checkin_day;
+  }
+
+  /**
+   * @param $checkin_day
+   */
+  public function setCheckinDay($checkin_day) {
+    $this->checkin_day = $checkin_day;
+  }
+
 }

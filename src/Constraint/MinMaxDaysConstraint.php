@@ -189,4 +189,46 @@ class MinMaxDaysConstraint extends Constraint {
     return isset($weekdays[$day]) ? $weekdays[$day] : '';
   }
 
+  /**
+   * @return int
+   */
+  public function getMinDays() {
+    return $min_days;
+  }
+
+  /**
+   * @param $min_days
+   */
+  public function setMinDays($min_days) {
+    $this->min_days = $min_days;
+  }
+
+  /**
+   * @return int
+   */
+  public function getMaxDays() {
+    return $max_days;
+  }
+
+  /**
+   * @param $max_days
+   */
+  public function setMaxDays($max_days) {
+    $this->max_days = $max_days;
+  }
+
+  /**
+   * @return int
+   */
+  public function getCheckinDay() {
+    return $checkin_day;
+  }
+
+  /**
+   * @param $checkin_day
+   */
+  public function setCheckinDay($checkin_day) {
+    $this->checkin_day = $checkin_day;
+  }
+
 }
