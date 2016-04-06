@@ -37,7 +37,7 @@ class EventInterval {
     $duration_seconds = $duration->d * 86400 + $duration->h * 3600 + $duration->i * 60 + $duration->s;
 
     $diff = $start_date->diff($temp_end_date);
-    $diff_seconds = $diff->d * 86400 + $diff->h * 3600 + $diff->i * 60 + $diff->s;
+    $diff_seconds = $diff->days * 86400 + $diff->h * 3600 + $diff->i * 60 + $diff->s;
 
     return $diff_seconds / $duration_seconds;
   }
