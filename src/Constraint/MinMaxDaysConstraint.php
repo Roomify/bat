@@ -79,7 +79,10 @@ class MinMaxDaysConstraint extends Constraint {
           $start_date = $calendar_response->getStartDate();
           $end_date = $calendar_response->getEndDate();
 
-          $diff = $end_date->diff($start_date)->days;
+          $temp_end_date = clone($end_date);
+          $temp_end_date->add(new \DateInterval('PT1M'));
+
+          $diff = $temp_end_date->diff($start_date)->days;
           if (is_numeric($this->min_days) && $diff < $this->min_days) {
             $calendar_response->removeFromMatched($included_set[$unit_id]['unit'], CalendarResponse::CONSTRAINT, $this);
 
