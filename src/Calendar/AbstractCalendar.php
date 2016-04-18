@@ -42,6 +42,11 @@ abstract class AbstractCalendar implements CalendarInterface {
    */
   protected $default_value;
 
+  /**
+   * @var
+   */
+  protected $itemized_events;
+
 
   /**
    * {@inheritdoc}
@@ -72,16 +77,18 @@ abstract class AbstractCalendar implements CalendarInterface {
    *
    * @param \DateTime $start_date
    * @param \DateTime $end_date
+   * @param $reset
+   *
    * @return array
    */
-  public function getEvents(\DateTime $start_date, \DateTime $end_date) {
-    // We first get events in the itemized format
-    $itemized_events = $this->getEventsItemized($start_date, $end_date);
+  public function getEvents(\DateTime $start_date, \DateTime $end_date, $reset = TRUE) {
+    if ($reset || empty($this->itemized_events)) {
+      // We first get events in the itemized format
+      $this->itemized_events = $this->getEventsItemized($start_date, $end_date);
+    }
 
     // We then normalize those events to create Events that get added to an array
-    $events = $this->getEventsNormalized($start_date, $end_date, $itemized_events);
-
-    return $events;
+    return $this->getEventsNormalized($start_date, $end_date, $this->itemized_events);
   }
 
   /**
@@ -89,12 +96,14 @@ abstract class AbstractCalendar implements CalendarInterface {
    *
    * @param \DateTime $start_date
    * @param \DateTime $end_date
+   * @param $reset
    *
    * @return array
    *  An array of states keyed by unit
    */
-  public function getStates(\DateTime $start_date, \DateTime $end_date) {
-    $events = $this->getEvents($start_date, $end_date);
+  public function getStates(\DateTime $start_date, \DateTime $end_date, $reset = TRUE) {
+    $events = $this->getEvents($start_date, $end_date, $reset);
+
     $states = array();
     foreach ($events as $unit => $unit_events) {
       foreach ($unit_events as $event) {
@@ -114,15 +123,16 @@ abstract class AbstractCalendar implements CalendarInterface {
    * @param $valid_states
    * @param $constraints
    * @param $intersect
+   * @param $reset
    *
    * @return CalendarResponse
    */
-  public function getMatchingUnits(\DateTime $start_date, \DateTime $end_date, $valid_states, $constraints = array(), $intersect = FALSE) {
+  public function getMatchingUnits(\DateTime $start_date, \DateTime $end_date, $valid_states, $constraints = array(), $intersect = FALSE, $reset = TRUE) {
     $units = array();
     $response = new CalendarResponse($start_date, $end_date, $valid_states);
     $keyed_units = $this->keyUnitsById();
 
-    $states = $this->getStates($start_date, $end_date);
+    $states = $this->getStates($start_date, $end_date, $reset);
     foreach ($states as $unit => $unit_states) {
       // Create an array with just the states
       $current_states = array_keys($unit_states);
