@@ -42,6 +42,13 @@ abstract class AbstractCalendar implements CalendarInterface {
    */
   protected $default_value;
 
+  /**
+   * Stores itemized events allowing us to perform searches over them without having to pull
+   * them out of storage (i.e. reducing DB calls)
+   * @var
+   */
+  protected $itemized_events;
+
 
   /**
    * {@inheritdoc}
@@ -72,16 +79,18 @@ abstract class AbstractCalendar implements CalendarInterface {
    *
    * @param \DateTime $start_date
    * @param \DateTime $end_date
+   * @param $reset - if set to TRUE we will always refer to the Store to retrieve events
+   *
    * @return array
    */
-  public function getEvents(\DateTime $start_date, \DateTime $end_date) {
-    // We first get events in the itemized format
-    $itemized_events = $this->getEventsItemized($start_date, $end_date);
+  public function getEvents(\DateTime $start_date, \DateTime $end_date, $reset = TRUE) {
+    if ($reset || empty($this->itemized_events)) {
+      // We first get events in the itemized format
+      $this->itemized_events = $this->getEventsItemized($start_date, $end_date);
+    }
 
     // We then normalize those events to create Events that get added to an array
-    $events = $this->getEventsNormalized($start_date, $end_date, $itemized_events);
-
-    return $events;
+    return $this->getEventsNormalized($start_date, $end_date, $this->itemized_events);
   }
 
   /**
@@ -89,12 +98,14 @@ abstract class AbstractCalendar implements CalendarInterface {
    *
    * @param \DateTime $start_date
    * @param \DateTime $end_date
+   * @param $reset - if set to TRUE we will refer to the Store to retrieve events
    *
    * @return array
    *  An array of states keyed by unit
    */
-  public function getStates(\DateTime $start_date, \DateTime $end_date) {
-    $events = $this->getEvents($start_date, $end_date);
+  public function getStates(\DateTime $start_date, \DateTime $end_date, $reset = TRUE) {
+    $events = $this->getEvents($start_date, $end_date, $reset);
+
     $states = array();
     foreach ($events as $unit => $unit_events) {
       foreach ($unit_events as $event) {
@@ -108,21 +119,26 @@ abstract class AbstractCalendar implements CalendarInterface {
   /**
    * Given a date range and a set of valid states it will return all units within the
    * set of valid states.
+   * If intersect is set to TRUE a unit will report as matched as long as within the time
+   * period requested it finds itself at least once within a valid state.
+   * Alternatively units will match ONLY if they find themselves withing the valid states and
+   * no other state.
    *
    * @param \DateTime $start_date
    * @param \DateTime $end_date
    * @param $valid_states
    * @param $constraints
-   * @param $intersect
+   * @param $intersect - performs an intersect rather than a diff on valid states
+   * @param $reset - if set to true we refer to the Store to retrieve events
    *
    * @return CalendarResponse
    */
-  public function getMatchingUnits(\DateTime $start_date, \DateTime $end_date, $valid_states, $constraints = array(), $intersect = FALSE) {
+  public function getMatchingUnits(\DateTime $start_date, \DateTime $end_date, $valid_states, $constraints = array(), $intersect = FALSE, $reset = TRUE) {
     $units = array();
     $response = new CalendarResponse($start_date, $end_date, $valid_states);
     $keyed_units = $this->keyUnitsById();
 
-    $states = $this->getStates($start_date, $end_date);
+    $states = $this->getStates($start_date, $end_date, $reset);
     foreach ($states as $unit => $unit_states) {
       // Create an array with just the states
       $current_states = array_keys($unit_states);

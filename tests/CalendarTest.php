@@ -657,4 +657,53 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($calendar->getStates($sd1, $sd2), array(1 => array(11 => 11), 2 => array(22 => 22)));
   }
 
+  public function testSavedItemizedEvents() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+
+    $units = array($u1, $u2);
+
+    $sd = new \DateTime('2016-01-01 12:12');
+    $ed = new \DateTime('2016-03-31 18:12');
+
+    $sd1 = new \DateTime('2016-01-02 12:12');
+    $ed1 = new \DateTime('2016-01-10 13:12');
+
+    $sd2 = new \DateTime('2016-01-16 13:12');
+    $ed2 = new \DateTime('2016-01-20 15:29');
+
+    $sd3 = new \DateTime('2016-01-28 13:12');
+    $ed3 = new \DateTime('2016-02-03 15:29');
+
+    $sd4 = new \DateTime('2016-02-03 18:08');
+    $ed4 = new \DateTime('2016-02-03 21:29');
+
+    $sd_wide = new \DateTime('2015-01-01 12:12');
+    $ed_wide = new \DateTime('2017-01-01 12:12');
+
+    // Create some event for unit 1 and 2
+    $e1u1 = new Event($sd1, $ed1, $u1, 11);
+    $e1u2 = new Event($sd1, $ed1, $u2, 13);
+    $e2u1 = new Event($sd2, $ed2, $u1, 11);
+    $e3u1 = new Event($sd4, $ed4, $u1, 11);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    // Add the events.
+    $calendar->addEvents(array($e1u1, $e2u1, $e3u1, $e1u2), Event::BAT_HOURLY);
+
+    $response = $calendar->getMatchingUnits($sd_wide, $ed_wide, array(10, 11, 17), array(), FALSE, FALSE);
+    $valid_unit_ids = array_keys($response->getIncluded());
+    // The result should be the unit 1.
+    $this->assertEquals($valid_unit_ids[0], 1);
+
+
+    $response = $calendar->getMatchingUnits($sd, $ed, array(10, 11, 17), array(), FALSE, FALSE);
+    $valid_unit_ids = array_keys($response->getIncluded());
+    // The result should be the unit 1.
+    $this->assertEquals($valid_unit_ids[0], 1);
+  }
+
 }
