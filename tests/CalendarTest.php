@@ -706,4 +706,103 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($valid_unit_ids[0], 1);
   }
 
+  public function testGetMatchingUnitsWithoutReset() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+    $u3 = new Unit(3,10,array());
+    $u4 = new Unit(4,10,array());
+
+    $units = array($u1, $u2, $u3, $u4);
+
+    $sd = new \DateTime('2016-05-01 00:00');
+    $ed = new \DateTime('2016-05-01 23:59');
+
+    $sd1 = new \DateTime('2016-05-01 10:00');
+    $ed1 = new \DateTime('2016-05-01 10:59');
+
+    $sd2 = new \DateTime('2016-05-01 14:00');
+    $ed2 = new \DateTime('2016-05-01 14:29');
+
+    $sd3 = new \DateTime('2016-05-01 09:45');
+    $ed3 = new \DateTime('2016-05-01 10:14');
+
+    $sd4 = new \DateTime('2016-05-01 10:45');
+    $ed4 = new \DateTime('2016-05-01 10:59');
+
+    $e1u1 = new Event($sd1, $ed1, $u1, 11);
+    $e1u2 = new Event($sd1, $ed1, $u2, 11);
+    $e1u3 = new Event($sd1, $ed1, $u3, 11);
+
+    $e2u1 = new Event($sd2, $ed2, $u1, 11);
+    $e2u2 = new Event($sd2, $ed2, $u2, 11);
+    $e2u3 = new Event($sd2, $ed2, $u3, 11);
+    $e2u4 = new Event($sd2, $ed2, $u3, 11);
+
+    $e3u4 = new Event($sd3, $ed3, $u4, 11);
+    $e4u4 = new Event($sd4, $ed4, $u4, 11);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    $calendar->addEvents(array($e1u1, $e1u2, $e1u3, $e2u1, $e2u2, $e2u3, $e2u4, $e3u4, $e4u4), Event::BAT_HOURLY);
+
+    $event_ids = $calendar->getEvents($sd, $ed);
+
+    foreach ($event_ids as $unit_id => $unit_events) {
+      foreach ($unit_events as $key => $event) {
+        $event_start_date = $event->getStartDate();
+        $dates[$event_start_date->getTimestamp()] = $event_start_date;
+      }
+    }
+
+    ksort($dates);
+    $dates = array_values($dates);
+
+    for ($i = 0; $i < (count($dates) - 1); $i++) {
+      $sd = $dates[$i];
+      $ed = clone($dates[$i + 1]);
+      $ed->sub(new \DateInterval('PT1M'));
+
+      $response = $calendar->getMatchingUnits($sd, $ed, array(10), array(), FALSE, FALSE);
+
+      if (count(array_keys($response->getIncluded()))) {
+        if ($i == 0) {
+          $this->assertEquals($sd->format('Y-m-d H:i'), '2016-05-01 00:00');
+          $this->assertEquals($ed->format('Y-m-d H:i'), '2016-05-01 09:44');
+        }
+        elseif ($i == 1) {
+          $this->assertEquals($sd->format('Y-m-d H:i'), '2016-05-01 09:45');
+          $this->assertEquals($ed->format('Y-m-d H:i'), '2016-05-01 09:59');
+        }
+        elseif ($i == 3) {
+          $this->assertEquals($sd->format('Y-m-d H:i'), '2016-05-01 10:15');
+          $this->assertEquals($ed->format('Y-m-d H:i'), '2016-05-01 10:44');
+        }
+        elseif ($i == 5) {
+          $this->assertEquals($sd->format('Y-m-d H:i'), '2016-05-01 11:00');
+          $this->assertEquals($ed->format('Y-m-d H:i'), '2016-05-01 13:59');
+        }
+        elseif ($i == 7) {
+          $this->assertEquals($sd->format('Y-m-d H:i'), '2016-05-01 14:30');
+          $this->assertEquals($ed->format('Y-m-d H:i'), '2016-05-01 23:59');
+        }
+      }
+      else {
+        if ($i == 2) {
+          $this->assertEquals($sd->format('Y-m-d H:i'), '2016-05-01 10:00');
+          $this->assertEquals($ed->format('Y-m-d H:i'), '2016-05-01 10:14');
+        }
+        elseif ($i == 4) {
+          $this->assertEquals($sd->format('Y-m-d H:i'), '2016-05-01 10:45');
+          $this->assertEquals($ed->format('Y-m-d H:i'), '2016-05-01 10:59');
+        }
+        elseif ($i == 6) {
+          $this->assertEquals($sd->format('Y-m-d H:i'), '2016-05-01 14:00');
+          $this->assertEquals($ed->format('Y-m-d H:i'), '2016-05-01 14:29');
+        }
+      }
+    }
+  }
+
 }
