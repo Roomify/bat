@@ -117,10 +117,10 @@ class MinMaxDaysConstraint extends Constraint {
     $end_date = FALSE;
 
     // Date range constraint variables.
-    if ($this->start_date !== NULL) {
+    if ($this->start_date !== NULL && $this->start_date != (new \DateTime('1970-01-01'))) {
       $start_date = $this->start_date->format('Y-m-d');
     }
-    if ($this->start_date !== NULL) {
+    if ($this->end_date !== NULL && $this->end_date != (new \DateTime('2999-12-31'))) {
       $end_date = $this->end_date->format('Y-m-d');
     }
 

@@ -57,7 +57,7 @@ class CheckInDayConstraint extends Constraint {
 
       foreach ($included_set as $unit_id => $set) {
         if (isset($units[$unit_id]) || empty($units)) {
-          $calendar_response->removeFromMatched($included_set[$unit_id]['unit'], CalendarResponse::INVALID_STATE);
+          $calendar_response->removeFromMatched($included_set[$unit_id]['unit'], CalendarResponse::CONSTRAINT, $this);
 
           $this->affected_units[$unit_id] = $included_set[$unit_id]['unit'];
         }
@@ -82,10 +82,10 @@ class CheckInDayConstraint extends Constraint {
     $day_of_the_week = $this->getWeekDay($this->checkin_day);
 
     // Date range constraint variables.
-    if ($this->start_date !== NULL) {
+    if ($this->start_date !== NULL && $this->start_date != (new \DateTime('1970-01-01'))) {
       $start_date = $this->start_date->format('Y-m-d');
     }
-    if ($this->start_date !== NULL) {
+    if ($this->end_date !== NULL && $this->end_date != (new \DateTime('2999-12-31'))) {
       $end_date = $this->end_date->format('Y-m-d');
     }
 
@@ -103,9 +103,9 @@ class CheckInDayConstraint extends Constraint {
     // Specify the day of the week constraint.
     if ($day_of_the_week) {
       if ($start_date && $end_date) {
-        $text = 'From @start_date to @end_date, if booking starts on @day_of_the_week';
+        $text = 'From @start_date to @end_date, bookings must start on @day_of_the_week';
       } else {
-        $text = 'If booking starts on @day_of_the_week';
+        $text = 'Bookings must start on @day_of_the_week';
       }
 
       $args['@day_of_the_week'] = $day_of_the_week;

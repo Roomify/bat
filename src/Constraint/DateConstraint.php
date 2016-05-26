@@ -66,7 +66,7 @@ class DateConstraint extends Constraint {
 
       foreach ($included_set as $unit_id => $set) {
         if (isset($units[$unit_id]) || empty($units)) {
-          $calendar_response->removeFromMatched($included_set[$unit_id]['unit'], CalendarResponse::INVALID_STATE);
+          $calendar_response->removeFromMatched($included_set[$unit_id]['unit'], CalendarResponse::CONSTRAINT, $this);
 
           $this->affected_units[$unit_id] = $included_set[$unit_id]['unit'];
         }
