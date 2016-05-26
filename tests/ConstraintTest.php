@@ -207,7 +207,7 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     // Constraint with Dates
     $checkinday_constraint = new CheckInDayConstraint(array($u1), $checkin_day, $sd, $ed);
     $string = $checkinday_constraint->toString();
-    $this->assertEquals($string['text'], 'From @start_date to @end_date, if booking starts on @day_of_the_week');
+    $this->assertEquals($string['text'], 'From @start_date to @end_date, bookings must start on @day_of_the_week');
     $this->assertEquals($string['args']['@start_date'], '2016-01-01');
     $this->assertEquals($string['args']['@end_date'], '2016-03-31');
     $this->assertEquals($string['args']['@day_of_the_week'], 'Monday');
@@ -217,7 +217,7 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     $checkinday_constraint = new CheckInDayConstraint(array($u1), $checkin_day);
     $string = $checkinday_constraint->toString();
 
-    $this->assertEquals($string['text'], 'If booking starts on @day_of_the_week');
+    $this->assertEquals($string['text'], 'Bookings must start on @day_of_the_week');
     $this->assertEquals($string['args']['@day_of_the_week'], 'Monday');
 
     $response = $calendar->getMatchingUnits($sd, $ed, array(10, 11), array());
