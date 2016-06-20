@@ -215,14 +215,15 @@ class EventItemizer {
     $end_date = clone($this->event->getEndDate());
 
     if ($this->event->isSameDay()) {
-      if (!($this->event->getEndDate()->format('H:i') == '23:59')) {
+      if (!($this->event->getStartDate()->format('H:i') == '00:00' && $this->event->getEndDate()->format('H:i') == '23:59')) {
         $period = new \DatePeriod($start_date, $interval, $end_date->add(new \DateInterval('PT1M')));
         $itemized_same_day = $this->createHourlyGranular($period, $start_date);
         $itemized[EventItemizer::BAT_DAY][$sy][$sm]['d' . $sd] = -1;
         $itemized[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_same_day[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd];
         $itemized[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_same_day[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd];
       }
-    } else {
+    }
+    else {
       // Deal with the start day unless it starts on midnight precisely at which point the whole day is booked
       if (!($this->event->getStartDate()->format('H:i') == '00:00')) {
         $start_period = new \DatePeriod($start_date, $interval, new \DateTime($start_date->format("Y-n-j 23:59:59")));

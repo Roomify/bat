@@ -523,4 +523,38 @@ class EventTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($mock_event[Event::BAT_DAY]['2016']['4']['d30'], '5');
   }
 
+  public function testEventItemizeEventEndMidnight() {
+    $event_state = 5;
+    $start_date = new \DateTime('2016-03-01 21:00');
+    $end_date = new \DateTime('2016-03-01 23:59');
+    $unit = new Unit(1, 2, array());
+
+    $event = new Event($start_date, $end_date, $unit, $event_state);
+
+    $itemized = $event->itemize(new EventItemizer($event));
+
+    $this->assertEquals($itemized[Event::BAT_DAY]['2016']['3']['d1'], '-1');
+
+    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['3']['d1']['h21'], 5);
+    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['3']['d1']['h22'], 5);
+    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['3']['d1']['h23'], 5);
+
+    $this->assertEquals($itemized[Event::BAT_MINUTE]['2016']['3']['d1'], array());
+
+  }
+
+  public function testEventItemizeEventOneDay() {
+    $event_state = 5;
+    $start_date = new \DateTime('2016-03-01 00:00');
+    $end_date = new \DateTime('2016-03-01 23:59');
+    $unit = new Unit(1, 2, array());
+
+    $event = new Event($start_date, $end_date, $unit, $event_state);
+
+    $itemized = $event->itemize(new EventItemizer($event));
+
+    $this->assertEquals($itemized[Event::BAT_DAY]['2016']['3']['d1'], 5);
+
+  }
+
 }
