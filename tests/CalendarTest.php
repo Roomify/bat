@@ -805,4 +805,42 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     }
   }
 
+  public function testSplitHour() {
+    $u1 = new Unit(1,0,array());
+
+    $units = array($u1);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    $sd1 = new \DateTime('2016-08-01 10:00');
+    $ed1 = new \DateTime('2016-08-01 10:59');
+
+    $e1s11 = new Event($sd1, $ed1, $u1, 11);
+
+    $calendar->addEvents(array($e1s11), Event::BAT_HOURLY);
+
+    $itemized = $calendar->getEventsItemized($sd1, $ed1);
+
+    $this->assertEquals($itemized['1']['bat_day']['2016']['8']['d1'], '-1');
+    $this->assertEquals($itemized['1']['bat_hour']['2016']['8']['d1']['h10'], '11');
+
+    $sd2 = new \DateTime('2016-08-01 10:00');
+    $ed2 = new \DateTime('2016-08-01 10:14');
+
+    $e2s12 = new Event($sd2, $ed2, $u1, 12);
+
+    $calendar->addEvents(array($e2s12), Event::BAT_HOURLY);
+
+    $itemized = $calendar->getEventsItemized($sd1, $ed1);
+
+    $this->assertEquals($itemized['1'][Event::BAT_DAY]['2016']['8']['d1'], '-1');
+    $this->assertEquals($itemized['1'][Event::BAT_HOUR]['2016']['8']['d1']['h10'], '-1');
+    $this->assertEquals($itemized['1'][Event::BAT_MINUTE]['2016']['8']['d1']['h10']['m10'], '12');
+    $this->assertEquals($itemized['1'][Event::BAT_MINUTE]['2016']['8']['d1']['h10']['m14'], '12');
+    $this->assertEquals($itemized['1'][Event::BAT_MINUTE]['2016']['8']['d1']['h10']['m15'], '11');
+    $this->assertEquals($itemized['1'][Event::BAT_MINUTE]['2016']['8']['d1']['h10']['m59'], '11');
+  }
+
 }

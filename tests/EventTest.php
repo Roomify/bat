@@ -420,7 +420,6 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
     // THe last day hour should be empty
     $this->assertEquals(count($itemized[Event::BAT_HOUR]['2016']['3']['d1']), 0);
-
   }
 
   public function testEventItemizeEventTwoMonthsStartMidnight() {
@@ -452,7 +451,6 @@ class EventTest extends \PHPUnit_Framework_TestCase {
     
     // THe last day hour should be empty
     $this->assertEquals(count($itemized[Event::BAT_HOUR]['2016']['3']['d1']), 0);
-
   }
 
   public function testEventItemizeIncludingTwoYearsAndFebruary() {
@@ -506,7 +504,6 @@ class EventTest extends \PHPUnit_Framework_TestCase {
       }
       $this->assertEquals($itemized[Event::BAT_MINUTE]['2016']['4']['d30']['h12'][$index], '5');
     }
-
   }
 
   public function testEndOfMonthEventItemization() {
@@ -521,6 +518,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
     // First day should be -1
     $this->assertEquals($mock_event[Event::BAT_DAY]['2016']['4']['d30'], '5');
+
   }
 
   public function testEventItemizeEventEndMidnight() {
@@ -535,12 +533,12 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['3']['d1'], '-1');
 
-    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['3']['d1']['h21'], 5);
-    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['3']['d1']['h22'], 5);
-    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['3']['d1']['h23'], 5);
+    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['3']['d1']['h21'], '5');
+    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['3']['d1']['h22'], '5');
+    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['3']['d1']['h23'], '5');
 
-    $this->assertEquals($itemized[Event::BAT_MINUTE]['2016']['3']['d1'], array());
-
+    $this->assertEquals($itemized[Event::BAT_MINUTE]['2016']['3']['d1']['h21']['m00'], '5');
+    $this->assertEquals($itemized[Event::BAT_MINUTE]['2016']['3']['d1']['h23']['m59'], '5');
   }
 
   public function testEventItemizeEventOneDay() {
@@ -553,8 +551,7 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
     $itemized = $event->itemize(new EventItemizer($event));
 
-    $this->assertEquals($itemized[Event::BAT_DAY]['2016']['3']['d1'], 5);
-
+    $this->assertEquals($itemized[Event::BAT_DAY]['2016']['3']['d1'], '5');
   }
 
 }

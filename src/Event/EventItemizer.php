@@ -231,7 +231,8 @@ class EventItemizer {
         $itemized[EventItemizer::BAT_DAY][$sy][$sm]['d' . $sd] = -1;
         $itemized[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_start[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd];
         $itemized[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_start[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd];
-      } else {
+      }
+      else {
         // Just set an empty hour and minute
         $itemized[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd] = array();
         $itemized[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd] = array();
@@ -241,7 +242,8 @@ class EventItemizer {
       if ($this->event->getEndDate()->format('H:i') == '23:59') {
         $itemized[EventItemizer::BAT_HOUR][$ey][$em]['d' . $ed] = array();
         $itemized[EventItemizer::BAT_MINUTE][$ey][$em]['d' . $ed] = array();
-      } else {
+      }
+      else {
         $end_period = new \DatePeriod(new \DateTime($end_date->format("Y-n-j 00:00:00")), $interval, $end_date->add(new \DateInterval('PT1M')));
         $itemized_end = $this->createHourlyGranular($end_period, new \DateTime($end_date->format("Y-n-j 00:00:00")));
         $itemized[EventItemizer::BAT_DAY][$ey][$em]['d' . $ed] = -1;
@@ -281,8 +283,7 @@ class EventItemizer {
       elseif ($counter == 60 && $start_minute == 0) {
         // Did a real whole hour so initialize the hour
         $itemized[EventItemizer::BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')] = $this->event->getValue();
-        // We have a whole hour so get rid of the minute info
-        unset($itemized[EventItemizer::BAT_MINUTE][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')]);
+
         $counter = 0;
         $start_minute = 0;
       }
