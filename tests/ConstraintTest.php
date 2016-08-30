@@ -447,7 +447,8 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     $constraints[] = new MinMaxDaysConstraint(array($u1, $u2), 4, 0, $sd1, $ed1);
     $constraints[] = new MinMaxDaysConstraint(array($u1, $u2), 5, 0, $sd2, $ed2);
 
-    $normalized_constraints = ConstraintManager::normalizeConstraints($constraints);
+    $constraint_manager = new ConstraintManager($constraints);
+    $normalized_constraints = $constraint_manager->normalizeConstraints('Roomify\Bat\Constraint\MinMaxDaysConstraint');
 
     $this->assertEquals(count($constraints), 3);
     $this->assertEquals(count($normalized_constraints), 5);
@@ -488,7 +489,8 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     $constraints[] = new MinMaxDaysConstraint(array($u1, $u2), 4, 0, $sd1, $ed1);
     $constraints[] = new MinMaxDaysConstraint(array($u1, $u2), 5, 0, $sd2, $ed2);
 
-    $normalized_constraints = ConstraintManager::normalizeConstraints($constraints);
+    $constraint_manager = new ConstraintManager($constraints);
+    $normalized_constraints = $constraint_manager->normalizeConstraints('Roomify\Bat\Constraint\MinMaxDaysConstraint');
 
     $this->assertEquals(count($constraints), 3);
     $this->assertEquals(count($normalized_constraints), 4);
@@ -526,7 +528,127 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
     $constraints[] = new MinMaxDaysConstraint(array($u1, $u2), 4, 0, $sd1, $ed1);
     $constraints[] = new MinMaxDaysConstraint(array($u1, $u2), 5, 0, $sd2, $ed2);
 
-    $normalized_constraints = ConstraintManager::normalizeConstraints($constraints);
+    $constraint_manager = new ConstraintManager($constraints);
+    $normalized_constraints = $constraint_manager->normalizeConstraints('Roomify\Bat\Constraint\MinMaxDaysConstraint');
+
+    $this->assertEquals(count($constraints), 3);
+    $this->assertEquals(count($normalized_constraints), 3);
+  }
+
+  public function testConstraintManager4() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+
+    $units = array($u1, $u2);
+
+    $sd = new \DateTime('2016-01-01 00:00');
+    $ed = new \DateTime('2017-01-01 00:00');
+
+    $sd1 = new \DateTime('2016-02-01 00:00');
+    $ed1 = new \DateTime('2016-04-01 00:00');
+
+    $sd2 = new \DateTime('2016-03-01 00:00');
+    $ed2 = new \DateTime('2016-03-10 00:00');
+
+    $constraints = array();
+    $constraints[] = new CheckInDayConstraint(array($u1, $u2), 3, $sd, $ed);
+    $constraints[] = new CheckInDayConstraint(array($u1, $u2), 4, $sd1, $ed1);
+    $constraints[] = new CheckInDayConstraint(array($u1, $u2), 5, $sd2, $ed2);
+
+    $constraint_manager = new ConstraintManager($constraints);
+    $normalized_constraints = $constraint_manager->normalizeConstraints('Roomify\Bat\Constraint\CheckInDayConstraint');
+
+    $this->assertEquals(count($constraints), 3);
+    $this->assertEquals(count($normalized_constraints), 5);
+
+    $this->assertEquals($normalized_constraints[0]->getCheckinDay(), '5');
+    $this->assertEquals($normalized_constraints[1]->getCheckinDay(), '4');
+    $this->assertEquals($normalized_constraints[2]->getCheckinDay(), '4');
+    $this->assertEquals($normalized_constraints[3]->getCheckinDay(), '3');
+    $this->assertEquals($normalized_constraints[4]->getCheckinDay(), '3');
+
+    $this->assertEquals($normalized_constraints[0]->getStartDate()->format('Y-m-d'), '2016-03-01');
+    $this->assertEquals($normalized_constraints[0]->getEndDate()->format('Y-m-d'), '2016-03-10');
+
+    $this->assertEquals($normalized_constraints[1]->getStartDate()->format('Y-m-d'), '2016-03-11');
+    $this->assertEquals($normalized_constraints[1]->getEndDate()->format('Y-m-d'), '2016-04-01');
+
+    $this->assertEquals($normalized_constraints[2]->getStartDate()->format('Y-m-d'), '2016-02-01');
+    $this->assertEquals($normalized_constraints[2]->getEndDate()->format('Y-m-d'), '2016-02-29');
+
+    $this->assertEquals($normalized_constraints[3]->getStartDate()->format('Y-m-d'), '2016-04-02');
+    $this->assertEquals($normalized_constraints[3]->getEndDate()->format('Y-m-d'), '2017-01-01');
+
+    $this->assertEquals($normalized_constraints[4]->getStartDate()->format('Y-m-d'), '2016-01-01');
+    $this->assertEquals($normalized_constraints[4]->getEndDate()->format('Y-m-d'), '2016-01-31');
+  }
+
+  public function testConstraintManager5() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+
+    $units = array($u1, $u2);
+
+    $sd = new \DateTime('2016-02-11 00:00');
+    $ed = new \DateTime('2017-01-01 00:00');
+
+    $sd1 = new \DateTime('2016-02-01 00:00');
+    $ed1 = new \DateTime('2016-04-01 00:00');
+
+    $sd2 = new \DateTime('2016-03-01 00:00');
+    $ed2 = new \DateTime('2016-03-10 00:00');
+
+    $constraints = array();
+    $constraints[] = new CheckInDayConstraint(array($u1, $u2), 3, $sd, $ed);
+    $constraints[] = new CheckInDayConstraint(array($u1, $u2), 4, $sd1, $ed1);
+    $constraints[] = new CheckInDayConstraint(array($u1, $u2), 5, $sd2, $ed2);
+
+    $constraint_manager = new ConstraintManager($constraints);
+    $normalized_constraints = $constraint_manager->normalizeConstraints('Roomify\Bat\Constraint\CheckInDayConstraint');
+
+    $this->assertEquals(count($constraints), 3);
+    $this->assertEquals(count($normalized_constraints), 4);
+
+    $this->assertEquals($normalized_constraints[0]->getCheckinDay(), '5');
+    $this->assertEquals($normalized_constraints[1]->getCheckinDay(), '4');
+    $this->assertEquals($normalized_constraints[2]->getCheckinDay(), '4');
+    $this->assertEquals($normalized_constraints[3]->getCheckinDay(), '3');
+
+    $this->assertEquals($normalized_constraints[0]->getStartDate()->format('Y-m-d'), '2016-03-01');
+    $this->assertEquals($normalized_constraints[0]->getEndDate()->format('Y-m-d'), '2016-03-10');
+
+    $this->assertEquals($normalized_constraints[1]->getStartDate()->format('Y-m-d'), '2016-03-11');
+    $this->assertEquals($normalized_constraints[1]->getEndDate()->format('Y-m-d'), '2016-04-01');
+
+    $this->assertEquals($normalized_constraints[2]->getStartDate()->format('Y-m-d'), '2016-02-01');
+    $this->assertEquals($normalized_constraints[2]->getEndDate()->format('Y-m-d'), '2016-02-29');
+
+    $this->assertEquals($normalized_constraints[3]->getStartDate()->format('Y-m-d'), '2016-04-02');
+    $this->assertEquals($normalized_constraints[3]->getEndDate()->format('Y-m-d'), '2017-01-01');
+  }
+
+  public function testConstraintManager6() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+
+    $units = array($u1, $u2);
+
+    $sd = new \DateTime('2016-05-01 00:00');
+    $ed = new \DateTime('2017-01-01 00:00');
+
+    $sd1 = new \DateTime('2016-02-01 00:00');
+    $ed1 = new \DateTime('2016-03-01 00:00');
+
+    $sd2 = new \DateTime('2016-03-10 00:00');
+    $ed2 = new \DateTime('2016-03-20 00:00');
+
+    $constraints = array();
+    $constraints[] = new CheckInDayConstraint(array($u1, $u2), 3, $sd, $ed);
+    $constraints[] = new CheckInDayConstraint(array($u1, $u2), 4, $sd1, $ed1);
+    $constraints[] = new CheckInDayConstraint(array($u1, $u2), 5, $sd2, $ed2);
+
+    $constraint_manager = new ConstraintManager($constraints);
+    $normalized_constraints = $constraint_manager->normalizeConstraints('Roomify\Bat\Constraint\CheckInDayConstraint');
 
     $this->assertEquals(count($constraints), 3);
     $this->assertEquals(count($normalized_constraints), 3);
