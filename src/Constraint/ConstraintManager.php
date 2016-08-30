@@ -33,18 +33,22 @@ class ConstraintManager {
               if ($constraint->getMinDays() && $new_constraint->getMinDays() ||
                   ($constraint->getMaxDays() && $new_constraint->getMaxDays())) {
                 if ($start_date >= $new_start_date && $start_date <= $new_end_date) {
-                  $constraint->setStartDate(clone($new_end_date)->add(new \DateInterval('P1D')));
+                  $new_end_date_clone = clone($new_end_date);
+                  $constraint->setStartDate($new_end_date_clone->add(new \DateInterval('P1D')));
                 }
                 elseif ($end_date >= $new_start_date && $end_date <= $new_end_date) {
-                  $constraint->setEndDate(clone($new_start_date)->sub(new \DateInterval('P1D')));
+                  $new_start_date_clone = clone($new_start_date);
+                  $constraint->setEndDate($new_start_date_clone->sub(new \DateInterval('P1D')));
                 }
                 elseif ($start_date < $new_start_date && $end_date > $new_end_date) {
                   if ($constraint->getEndDate() > $new_start_date) {
-                    $constraint->setEndDate(clone($new_start_date)->sub(new \DateInterval('P1D')));
+                    $new_start_date_clone = clone($new_start_date);
+                    $constraint->setEndDate($new_start_date_clone->sub(new \DateInterval('P1D')));
                   }
 
                   if ($split_constraint == NULL) {
-                    $split_start_date = clone($new_end_date)->add(new \DateInterval('P1D'));
+                    $split_start_date = clone($new_end_date);
+                    $split_start_date->add(new \DateInterval('P1D'));
                     $split_end_date = $end_date;
 
                     $split_constraint = new MinMaxDaysConstraint($constraint->getUnits(), $constraint->getMinDays(), $constraint->getMaxDays(), $split_start_date, $split_end_date , $constraint->getCheckinDay());
@@ -54,10 +58,12 @@ class ConstraintManager {
                     $split_end_date = $split_constraint->getEndDate();
 
                     if ($split_start_date < $new_end_date) {
-                      $split_constraint->setStartDate(clone($new_end_date)->add(new \DateInterval('P1D')));
+                      $new_end_date_clone = clone($new_end_date);
+                      $split_constraint->setStartDate($new_end_date_clone->add(new \DateInterval('P1D')));
                     }
                     if ($split_end_date < $new_start_date) {
-                      $split_constraint->setEndDate(clone($new_start_date)->sub(new \DateInterval('P1D')));
+                      $new_start_date_clone = clone($new_start_date);
+                      $split_constraint->setEndDate($new_start_date_clone->sub(new \DateInterval('P1D')));
                     }
                   }
                 }

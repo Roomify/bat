@@ -11,6 +11,7 @@ use Roomify\Bat\Calendar\Calendar;
 use Roomify\Bat\Store\SqlDBStore;
 use Roomify\Bat\Store\SqlLiteDBStore;
 
+use Roomify\Bat\Constraint\ConstraintManager;
 use Roomify\Bat\Constraint\MinMaxDaysConstraint;
 use Roomify\Bat\Constraint\CheckInDayConstraint;
 use Roomify\Bat\Constraint\DateConstraint;
@@ -425,4 +426,31 @@ class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
 
     $constraint->getAffectedUnits();
   }
+
+  public function testConstraintManager() {
+    $u1 = new Unit(1,10,array());
+    $u2 = new Unit(2,10,array());
+
+    $units = array($u1, $u2);
+
+    $sd = new \DateTime('2016-01-01 00:00');
+    $ed = new \DateTime('2017-01-01 00:00');
+
+    $sd1 = new \DateTime('2016-02-01 00:00');
+    $ed1 = new \DateTime('2016-04-01 00:00');
+
+    $sd2 = new \DateTime('2016-03-01 00:00');
+    $ed2 = new \DateTime('2016-03-10 00:00');
+
+    $constraints = array();
+    $constraints[] = new MinMaxDaysConstraint(array($u1, $u2), 3, 0, $sd, $ed);
+    $constraints[] = new MinMaxDaysConstraint(array($u1, $u2), 4, 0, $sd1, $ed1);
+    $constraints[] = new MinMaxDaysConstraint(array($u1, $u2), 5, 0, $sd2, $ed2);
+
+    $normalized_constraints = ConstraintManager::normalizeConstraints($constraints);
+
+    $this->assertEquals(count($constraints), 3);
+    $this->assertEquals(count($normalized_constraints), 5);
+  }
+
 }
