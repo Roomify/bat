@@ -60,7 +60,12 @@ class ConstraintManager {
       $classes = array_keys($this->constraints);
     }
     else {
-      $classes = array($constraint_class);
+      if (isset($this->constraints[$constraint_class])) {
+        $classes = array($constraint_class);
+      }
+      else {
+        return array();
+      }
     }
 
     $new_constraints = array();
