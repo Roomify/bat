@@ -136,7 +136,7 @@ class CheckInDayConstraint extends Constraint {
    * @return int
    */
   public function getCheckinDay() {
-    return $checkin_day;
+    return $this->checkin_day;
   }
 
   /**

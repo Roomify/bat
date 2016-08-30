@@ -196,7 +196,7 @@ class MinMaxDaysConstraint extends Constraint {
    * @return int
    */
   public function getMinDays() {
-    return $min_days;
+    return $this->min_days;
   }
 
   /**
@@ -210,7 +210,7 @@ class MinMaxDaysConstraint extends Constraint {
    * @return int
    */
   public function getMaxDays() {
-    return $max_days;
+    return $this->max_days;
   }
 
   /**
@@ -224,7 +224,7 @@ class MinMaxDaysConstraint extends Constraint {
    * @return int
    */
   public function getCheckinDay() {
-    return $checkin_day;
+    return $this->checkin_day;
   }
 
   /**

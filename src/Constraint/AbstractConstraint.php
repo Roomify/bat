@@ -46,28 +46,28 @@ abstract class AbstractConstraint implements ConstraintInterface {
    * {@inheritdoc}
    */
   public function setStartDate(\DateTime $start_date) {
-    $this->start_date = $start_date;
+    $this->start_date = clone($start_date);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getStartDate() {
-    return $this->start_date;
+    return clone($this->start_date);
   }
 
   /**
    * {@inheritdoc}
    */
   public function setEndDate(\DateTime $end_date) {
-    $this->end_date = $end_date;
+    $this->end_date = clone($end_date);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getEndDate() {
-    return $this->end_date;
+    return clone($this->end_date);
   }
 
   /**
