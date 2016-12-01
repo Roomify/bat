@@ -86,7 +86,7 @@ class DrupalDBStore extends SqlDBStore {
       //Write days
       foreach ($itemized[Event::BAT_DAY] as $year => $months) {
         foreach ($months as $month => $days) {
-          db_merge($this->day_table)
+          db_merge($this->day_table_no_prefix)
             ->key(array(
               'unit_id' => $event->getUnitId(),
               'year' => $year,
@@ -104,7 +104,7 @@ class DrupalDBStore extends SqlDBStore {
             foreach ($days as $day => $hours) {
               // Count required as we may receive empty hours for granular events that start and end on midnight
               if (count($hours) > 0) {
-                db_merge($this->hour_table)
+                db_merge($this->hour_table_no_prefix)
                   ->key(array(
                     'unit_id' => $event->getUnitId(),
                     'year' => $year,
@@ -123,7 +123,7 @@ class DrupalDBStore extends SqlDBStore {
           foreach ($months as $month => $days) {
             foreach ($days as $day => $hours) {
               foreach ($hours as $hour => $minutes) {
-                db_merge($this->minute_table)
+                db_merge($this->minute_table_no_prefix)
                   ->key(array(
                     'unit_id' => $event->getUnitId(),
                     'year' => $year,

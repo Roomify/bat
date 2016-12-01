@@ -41,6 +41,24 @@ abstract class SqlDBStore extends Store {
   public $minute_table;
 
   /**
+   * The table that holds day data without prefix.
+   * @var
+   */
+  public $day_table_no_prefix;
+
+  /**
+   * The table that holds hour data without prefix.
+   * @var
+   */
+  public $hour_table_no_prefix;
+
+  /**
+   * The table that holds minute data without prefix.
+   * @var
+   */
+  public $minute_table_no_prefix;
+
+  /**
    * The event type we are dealing with.
    * @var
    */
@@ -62,12 +80,20 @@ abstract class SqlDBStore extends Store {
       $this->day_table = $prefix . 'bat_event_' . $event_type . '_day_' . SqlDBStore::BAT_STATE;
       $this->hour_table = $prefix . 'bat_event_' . $event_type . '_hour_' . SqlDBStore::BAT_STATE;
       $this->minute_table = $prefix . 'bat_event_' . $event_type . '_minute_' . SqlDBStore::BAT_STATE;
+
+      $this->day_table_no_prefix = 'bat_event_' . $event_type . '_day_' . SqlDBStore::BAT_STATE;
+      $this->hour_table_no_prefix = 'bat_event_' . $event_type . '_hour_' . SqlDBStore::BAT_STATE;
+      $this->minute_table_no_prefix = 'bat_event_' . $event_type . '_minute_' . SqlDBStore::BAT_STATE;
     }
 
     if ($event_data == SqlDBStore::BAT_EVENT) {
       $this->day_table = $prefix . 'bat_event_' . $event_type . '_day_' . SqlDBStore::BAT_EVENT;
       $this->hour_table = $prefix . 'bat_event_' . $event_type . '_hour_' . SqlDBStore::BAT_EVENT;
       $this->minute_table = $prefix . 'bat_event_' . $event_type . '_minute_' . SqlDBStore::BAT_EVENT;
+
+      $this->day_table_no_prefix = 'bat_event_' . $event_type . '_day_' . SqlDBStore::BAT_EVENT;
+      $this->hour_table_no_prefix = 'bat_event_' . $event_type . '_hour_' . SqlDBStore::BAT_EVENT;
+      $this->minute_table_no_prefix = 'bat_event_' . $event_type . '_minute_' . SqlDBStore::BAT_EVENT;
     }
 
   }
