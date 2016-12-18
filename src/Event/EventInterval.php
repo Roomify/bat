@@ -10,7 +10,7 @@ namespace Roomify\Bat\Event;
 /**
  * Class EventInterval
  *
- * A utility class that brings togehter functions we end up using often across Bat to hand Event Intervals.
+ * A utility class that brings together functions we end up using often across Bat to hand Event Intervals.
  *
  * @package Roomify\Bat\Event
  */
