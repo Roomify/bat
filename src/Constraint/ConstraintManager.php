@@ -27,8 +27,7 @@ class ConstraintManager {
   public function getConstraints($constraint_class = NULL) {
     if ($constraint_class == NULL) {
       return $this->constraint;
-    }
-    else {
+    } else {
       return $this->constraint[$constraint_class];
     }
   }
@@ -58,12 +57,10 @@ class ConstraintManager {
   public function normalizeConstraints($constraint_class = NULL) {
     if ($constraint_class == NULL) {
       $classes = array_keys($this->constraints);
-    }
-    else {
+    } else {
       if (isset($this->constraints[$constraint_class])) {
         $classes = array($constraint_class);
-      }
-      else {
+      } else {
         return array();
       }
     }
@@ -89,8 +86,7 @@ class ConstraintManager {
 
     if ($constraint_class == NULL) {
       return $new_constraints;
-    }
-    else {
+    } else {
       return $new_constraints[$constraint_class];
     }
   }
@@ -194,12 +190,10 @@ class ConstraintManager {
             if ($start_date >= $new_start_date && $start_date <= $new_end_date) {
               $new_end_date_clone = clone($new_end_date);
               $constraint->setStartDate($new_end_date_clone->add(new \DateInterval('P1D')));
-            }
-            elseif ($end_date >= $new_start_date && $end_date <= $new_end_date) {
+            } elseif ($end_date >= $new_start_date && $end_date <= $new_end_date) {
               $new_start_date_clone = clone($new_start_date);
               $constraint->setEndDate($new_start_date_clone->sub(new \DateInterval('P1D')));
-            }
-            elseif ($start_date < $new_start_date && $end_date > $new_end_date) {
+            } elseif ($start_date < $new_start_date && $end_date > $new_end_date) {
               if ($constraint->getEndDate() > $new_start_date) {
                 $new_start_date_clone = clone($new_start_date);
                 $constraint->setEndDate($new_start_date_clone->sub(new \DateInterval('P1D')));
@@ -211,8 +205,7 @@ class ConstraintManager {
                 $split_end_date = $end_date;
 
                 $split_constraint = new CheckInDayConstraint($constraint->getUnits(), $constraint->getCheckinDay(), $split_start_date, $split_end_date);
-              }
-              else {
+              } else {
                 $split_start_date = $split_constraint->getStartDate();
                 $split_end_date = $split_constraint->getEndDate();
 
