@@ -69,9 +69,9 @@ $ composer require Roomify/Bat
 Create a unit with ID 1, default value 1 and a minimum length of event constraint.
 
 ``` php
-$constraint = new MinMaxDaysConstraint(null, 5)
+$constraint = new MinMaxDaysConstraint([], 5)
 
-$myroom = new Unit(1,1, array($constraint)); 
+$unit = new Unit(1,1, array($constraint)); 
 ```
 
 Create a Store for events of type availability and pricing, create an event for Unit 1 and save it
