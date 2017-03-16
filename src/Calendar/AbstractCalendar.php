@@ -45,10 +45,10 @@ abstract class AbstractCalendar implements CalendarInterface {
   /**
    * Stores itemized events allowing us to perform searches over them without having to pull
    * them out of storage (i.e. reducing DB calls)
-   * @var
+   *
+   * @var array
    */
   protected $itemized_events;
-
 
   /**
    * {@inheritdoc}
@@ -372,6 +372,18 @@ abstract class AbstractCalendar implements CalendarInterface {
    * @return array
    */
   public function getEventsNormalized(\DateTime $start_date, \DateTime $end_date, $events) {
+    // Daylight Saving Time
+    $timezone = new \DateTimeZone(date_default_timezone_get());
+    $transitions = $timezone->getTransitions($start_date->getTimestamp(), $end_date->getTimestamp());
+
+    $dst_transitions = array();
+    unset($transitions[0]);
+    foreach ($transitions as $transition) {
+      if ($transition['isdst']) {
+        $dst_transitions[] = $transition['ts'] - 60;
+      }
+    }
+    $is_daylight_saving_time = (empty($dst_transitions)) ? FALSE : TRUE;
 
     $normalized_events = array();
 
@@ -428,13 +440,23 @@ abstract class AbstractCalendar implements CalendarInterface {
                   $end_event->add(new \DateInterval('PT1H'));
                 }
                 elseif (($current_value != $hour_value) && ($current_value !== NULL)) {
-                  // Value just switched - let us wrap up with current event and start a new one
-                  $normalized_events[$unit_id][] = new Event($start_event, $end_event, $this->getUnit($unit_id), $current_value);
-                  // Start event becomes the end event with a minute added
-                  $start_event = clone($end_event->add(new \DateInterval('PT1M')));
-                  // End event comes the current point in time
-                  $end_event = new \DateTime($year . '-' . $month . '-' . substr($day, 1) . ' ' . substr($hour, 1) . ':59');
-                  $current_value = $hour_value;
+                  $skip_finalize_event = FALSE;
+
+                  if ($is_daylight_saving_time) {
+                    if (in_array($end_event->getTimestamp(), $dst_transitions)) {
+                      $skip_finalize_event = TRUE;
+                    }
+                  }
+
+                  if ($skip_finalize_event === FALSE) {
+                    // Value just switched - let us wrap up with current event and start a new one
+                    $normalized_events[$unit_id][] = new Event($start_event, $end_event, $this->getUnit($unit_id), $current_value);
+                    // Start event becomes the end event with a minute added
+                    $start_event = clone($end_event->add(new \DateInterval('PT1M')));
+                    // End event comes the current point in time
+                    $end_event = new \DateTime($year . '-' . $month . '-' . substr($day, 1) . ' ' . substr($hour, 1) . ':59');
+                    $current_value = $hour_value;
+                  }
                 }
                 if ($current_value === NULL) {
                   // Got into hours and still haven't created an event so

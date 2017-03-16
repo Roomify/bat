@@ -843,4 +843,50 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($itemized['1'][Event::BAT_MINUTE]['2016']['8']['d1']['h10']['m59'], '11');
   }
 
+  public function testDstTransition1() {
+    $u1 = new Unit(1,0,array());
+
+    $units = array($u1);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    $sd1 = new \DateTime('2017-03-26 00:57');
+    $ed1 = new \DateTime('2017-03-26 03:03');
+
+    $e1s11 = new Event($sd1, $ed1, $u1, 11);
+
+    $calendar->addEvents(array($e1s11), Event::BAT_HOURLY);
+
+    $events = $calendar->getEvents($sd1, $ed1);
+
+    $this->assertEquals($events[1][1]->getStartDate()->format('Y-m-d H:i'), '2017-03-26 00:57');
+    $this->assertEquals($events[1][1]->getEndDate()->format('Y-m-d H:i'), '2017-03-26 03:03');
+    $this->assertEquals($events[1][1]->getValue(), 11);
+  }
+
+  public function testDstTransition2() {
+    $u1 = new Unit(1,0,array());
+
+    $units = array($u1);
+
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+
+    $calendar = new Calendar($units, $store);
+
+    $sd1 = new \DateTime('2017-10-29 00:57');
+    $ed1 = new \DateTime('2017-10-29 04:03');
+
+    $e1s11 = new Event($sd1, $ed1, $u1, 11);
+
+    $calendar->addEvents(array($e1s11), Event::BAT_HOURLY);
+
+    $events = $calendar->getEvents($sd1, $ed1);
+
+    $this->assertEquals($events[1][1]->getStartDate()->format('Y-m-d H:i'), '2017-10-29 00:57');
+    $this->assertEquals($events[1][1]->getEndDate()->format('Y-m-d H:i'), '2017-10-29 04:03');
+    $this->assertEquals($events[1][1]->getValue(), 11);
+  }
+
 }

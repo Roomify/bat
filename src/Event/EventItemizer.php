@@ -289,6 +289,25 @@ class EventItemizer {
       }
     }
 
+    // Daylight Saving Time
+    $timezone = new \DateTimeZone(date_default_timezone_get());
+    $transitions = $timezone->getTransitions($period->getStartDate()->getTimestamp(), $period->getEndDate()->getTimestamp());
+
+    unset($transitions[0]);
+    foreach ($transitions as $transition) {
+      if ($transition['isdst']) {
+        $date = new \DateTime();
+        $date->setTimestamp($transition['ts']);
+
+        $hour = $date->format('G');
+        for ($i = 0; $i < 60; $i++) {
+          $minute = ($i < 10) ? '0' . $i : $i;
+
+          $itemized[EventItemizer::BAT_MINUTE][$date->format('Y')][$date->format('n')]['d' . $date->format('j')]['h' . $hour]['m' . $minute] = $this->event->getValue();
+        }
+      }
+    }
+
     return $itemized;
   }
 

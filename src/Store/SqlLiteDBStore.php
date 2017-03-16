@@ -50,14 +50,14 @@ class SqlLiteDBStore extends SqlDBStore {
       // Figure out how many days the current month has
       $temp_date = new \DateTime($data['year'] . "-" . $data['month']);
       $days_in_month = (int)$temp_date->format('t');
-      for ($i = 1; $i<=$days_in_month; $i++) {
+      for ($i = 1; $i <= $days_in_month; $i++) {
         $db_events[$data['unit_id']][Event::BAT_DAY][$data['year']][$data['month']]['d' . $i] = $data['d' . $i];
       }
     }
 
     // With the day events taken care off let's cycle through hours
     foreach ($results[Event::BAT_HOUR]->fetchAll() as $data) {
-      for ($i = 0; $i<=23; $i++) {
+      for ($i = 0; $i <= 23; $i++) {
         $db_events[$data['unit_id']][Event::BAT_HOUR][$data['year']][$data['month']]['d' . $data['day']]['h' . $i] = $data['h' . $i];
       }
     }
@@ -88,7 +88,6 @@ class SqlLiteDBStore extends SqlDBStore {
 
     // Get existing event data from db
     $existing_events = $this->getEventData($event->getStartDate(), $event->getEndDate(), array($event->getUnitId()));
-
 
     try {
       // Itemize an event so we can save it
