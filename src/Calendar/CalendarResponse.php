@@ -7,7 +7,7 @@
 
 namespace Roomify\Bat\Calendar;
 
-use Roomify\Bat\Unit\Unit;
+use Roomify\Bat\Unit\UnitInterface;
 use Roomify\Bat\Constraint\Constraint;
 
 /**
@@ -64,7 +64,7 @@ class CalendarResponse {
    * @param $unit
    * @param $reason
    */
-  public function addMatch(Unit $unit, $reason = '') {
+  public function addMatch(UnitInterface $unit, $reason = '') {
     $this->included_set[$unit->getUnitId()] = array(
       'unit' => $unit,
       'reason' => $reason,
@@ -75,7 +75,7 @@ class CalendarResponse {
    * @param $unit
    * @param $reason
    */
-  public function addMiss(Unit $unit, $reason = '', Constraint $constraint = NULL) {
+  public function addMiss(UnitInterface $unit, $reason = '', Constraint $constraint = NULL) {
     $this->excluded_set[$unit->getUnitId()] = array(
       'unit' => $unit,
       'reason' => $reason,
@@ -120,7 +120,7 @@ class CalendarResponse {
    *
    * @return bool
    */
-  public function removeFromMatched(Unit $unit, $reason = '', Constraint $constraint = NULL) {
+  public function removeFromMatched(UnitInterface $unit, $reason = '', Constraint $constraint = NULL) {
     if (isset($this->included_set[$unit->getUnitId()])) {
       // Remove a unit from matched and add to the missed set
       unset($this->included_set[$unit->getUnitId()]);

@@ -10,7 +10,7 @@ namespace Roomify\Bat\Valuator;
 use Roomify\Bat\Calendar\Calendar;
 use Roomify\Bat\Store\Store;
 use Roomify\Bat\Valuator\AbstractValuator;
-use Roomify\Bat\Unit\Unit;
+use Roomify\Bat\Unit\UnitInterface;
 use Roomify\Bat\Event\EventInterval;
 
 /**
@@ -37,11 +37,11 @@ class IntervalValuator extends AbstractValuator {
   /**
    * @param \DateTime $start_date
    * @param \DateTime $end_date
-   * @param Unit $unit
+   * @param UnitInterface $unit
    * @param Store $store
    * @param \DateInterval $duration_unit
    */
-  public function __construct(\DateTime $start_date, \DateTime $end_date, Unit $unit, Store $store, \DateInterval $duration_unit) {
+  public function __construct(\DateTime $start_date, \DateTime $end_date, UnitInterface $unit, Store $store, \DateInterval $duration_unit) {
     parent::__construct($start_date, $end_date, $unit, $store);
     $this->duration_unit = $duration_unit;
   }
