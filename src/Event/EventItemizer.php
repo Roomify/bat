@@ -268,25 +268,47 @@ class EventItemizer {
 
     $counter = (int)$period_start->format('i');
     $start_minute = $counter;
+    $init = TRUE;
+
+    $event_value = $this->event->getValue();
+
     foreach ($period as $minute) {
+      if ($init) {
+        $year = $minute->format('Y');
+        $month = $minute->format('n');
+        $day = $minute->format('j');
+        $hour = $minute->format('G');
+        $min = $minute->format('i');
+
+        $init = FALSE;
+      }
+
       // Doing minutes so set the values in the minute array
-      $itemized[EventItemizer::BAT_MINUTE][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')]['m' . $minute->format('i')] = $this->event->getValue();
+      $itemized[EventItemizer::BAT_MINUTE][$year][$month]['d' . $day]['h' . $hour]['m' . $min] = $event_value;
       // Let the hours know that it cannot determine availability
-      $itemized[EventItemizer::BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')] = -1;
-      $counter++;
+      $itemized[EventItemizer::BAT_HOUR][$year][$month]['d' . $day]['h' . $hour] = -1;
+      $min++;
 
-      if ($counter == 60 && $start_minute !== 0) {
+      if ($min == 60 && $start_minute !== 0) {
         // Not a real hour - leave as is and move on
-        $counter = 0;
+        $min = 0;
         $start_minute = 0;
       }
-      elseif ($counter == 60 && $start_minute == 0) {
+      elseif ($min == 60 && $start_minute == 0) {
         // Did a real whole hour so initialize the hour
-        $itemized[EventItemizer::BAT_HOUR][$minute->format('Y')][$minute->format('n')]['d' . $minute->format('j')]['h' . $minute->format('G')] = $this->event->getValue();
+        $itemized[EventItemizer::BAT_HOUR][$year][$month]['d' . $day]['h' . $hour] = $event_value;
 
-        $counter = 0;
+        $min = 0;
+        $hour++;
         $start_minute = 0;
       }
+
+      if ($hour == 23 && $min == 60) {
+        // Re-calculate if we're at a day boundary.
+        $init = TRUE;
+      }
+
+      $min = str_pad($min, 2, 0, STR_PAD_LEFT);
     }
 
     return $itemized;
