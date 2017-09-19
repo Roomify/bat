@@ -292,6 +292,7 @@ class EventItemizer {
       if ($min == 60 && $start_minute !== 0) {
         // Not a real hour - leave as is and move on
         $min = 0;
+        $hour++;
         $start_minute = 0;
       }
       elseif ($min == 60 && $start_minute == 0) {
