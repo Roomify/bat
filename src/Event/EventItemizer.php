@@ -303,7 +303,7 @@ class EventItemizer {
         $start_minute = 0;
       }
 
-      if ($hour == 23 && $min == 60) {
+      if ($hour == 24) {
         // Re-calculate if we're at a day boundary.
         $init = TRUE;
       }
