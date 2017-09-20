@@ -14,7 +14,7 @@ before_script:
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
 
-script: phpunit
+script: ./vendor/bin/phpunit
 
 notifications:
   slack: roomify:CZvo6Wik7hwNEr055RRLud9j
