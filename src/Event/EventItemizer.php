@@ -266,8 +266,7 @@ class EventItemizer {
   public function createHourlyGranular(\DatePeriod $period, \DateTime $period_start) {
     $itemized = array();
 
-    $counter = (int)$period_start->format('i');
-    $start_minute = $counter;
+    $start_minute = (int)$period_start->format('i');
     $init = TRUE;
 
     $event_value = $this->event->getValue();
