@@ -216,8 +216,7 @@ class EventItemizer {
 
     if ($this->event->isSameDay()) {
       if (!($this->event->getStartDate()->format('H:i') == '00:00' && $this->event->getEndDate()->format('H:i') == '23:59')) {
-        $period = new \DatePeriod($start_date, $interval, $end_date->add(new \DateInterval('PT1M')));
-        $itemized_same_day = $this->createHourlyGranular($period, $start_date);
+        $itemized_same_day = $this->createHourlyGranular($start_date, $end_date->add(new \DateInterval('PT1M')), $interval, $start_date);
         $itemized[EventItemizer::BAT_DAY][$sy][$sm]['d' . $sd] = -1;
         $itemized[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_same_day[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd];
         $itemized[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_same_day[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd];
@@ -226,8 +225,7 @@ class EventItemizer {
     else {
       // Deal with the start day unless it starts on midnight precisely at which point the whole day is booked
       if (!($this->event->getStartDate()->format('H:i') == '00:00')) {
-        $start_period = new \DatePeriod($start_date, $interval, new \DateTime($start_date->format("Y-n-j 23:59:59")));
-        $itemized_start = $this->createHourlyGranular($start_period, $start_date);
+        $itemized_start = $this->createHourlyGranular($start_date, new \DateTime($start_date->format("Y-n-j 23:59:59")), $interval, $start_date);
         $itemized[EventItemizer::BAT_DAY][$sy][$sm]['d' . $sd] = -1;
         $itemized[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_start[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd];
         $itemized[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_start[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd];
@@ -244,8 +242,7 @@ class EventItemizer {
         $itemized[EventItemizer::BAT_MINUTE][$ey][$em]['d' . $ed] = array();
       }
       else {
-        $end_period = new \DatePeriod(new \DateTime($end_date->format("Y-n-j 00:00:00")), $interval, $end_date->add(new \DateInterval('PT1M')));
-        $itemized_end = $this->createHourlyGranular($end_period, new \DateTime($end_date->format("Y-n-j 00:00:00")));
+        $itemized_end = $this->createHourlyGranular(new \DateTime($end_date->format("Y-n-j 00:00:00")), $end_date->add(new \DateInterval('PT1M')), $interval, new \DateTime($end_date->format("Y-n-j 00:00:00")));
         $itemized[EventItemizer::BAT_DAY][$ey][$em]['d' . $ed] = -1;
         $itemized[EventItemizer::BAT_HOUR][$ey][$em]['d' . $ed] = $itemized_end[EventItemizer::BAT_HOUR][$ey][$em]['d' . $ed];
         $itemized[EventItemizer::BAT_MINUTE][$ey][$em]['d' . $ed] = $itemized_end[EventItemizer::BAT_MINUTE][$ey][$em]['d' . $ed];
@@ -259,11 +256,15 @@ class EventItemizer {
    * Given a DatePeriod it transforms it in hours and minutes. Used to break the first and
    * last days of an event into more granular events.
    *
-   * @param \DatePeriod $period
+   * @param \DateTime $start_date
+   * @param \DateTime $end_date
+   * @param \DateInterval $interval
    * @param \DateTime $period_start
    * @return array
    */
-  public function createHourlyGranular(\DatePeriod $period, \DateTime $period_start) {
+  public function createHourlyGranular(\DateTime $start_date, \DateTime $end_date, \DateInterval $interval, \DateTime $period_start) {
+    $period = new \DatePeriod($start_date, $interval, $end_date);
+
     $itemized = array();
 
     $counter = (int)$period_start->format('i');
@@ -286,6 +287,25 @@ class EventItemizer {
 
         $counter = 0;
         $start_minute = 0;
+      }
+    }
+
+    // Daylight Saving Time
+    $timezone = new \DateTimeZone(date_default_timezone_get());
+    $transitions = $timezone->getTransitions($start_date->getTimestamp(), $end_date->getTimestamp());
+
+    unset($transitions[0]);
+    foreach ($transitions as $transition) {
+      if ($transition['isdst']) {
+        $date = new \DateTime();
+        $date->setTimestamp($transition['ts']);
+
+        $hour = $date->format('G');
+        for ($i = 0; $i < 60; $i++) {
+          $minute = ($i < 10) ? '0' . $i : $i;
+
+          $itemized[EventItemizer::BAT_MINUTE][$date->format('Y')][$date->format('n')]['d' . $date->format('j')]['h' . $hour]['m' . $minute] = $this->event->getValue();
+        }
       }
     }
 
