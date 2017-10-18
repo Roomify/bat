@@ -7,6 +7,7 @@
 
 namespace Roomify\Bat\Store;
 
+use Roomify\Bat\Event\EventInterface;
 use Roomify\Bat\Event\Event;
 use Roomify\Bat\Event\EventItemizer;
 use Roomify\Bat\Store\SqlDBStore;
@@ -70,12 +71,12 @@ class DrupalDBStore extends SqlDBStore {
   }
 
   /**
-   * @param \Roomify\Bat\Event\Event $event
+   * @param \Roomify\Bat\Event\EventInterface $event
    * @param $granularity
    *
    * @return bool
    */
-  public function storeEvent(Event $event, $granularity = Event::BAT_HOURLY) {
+  public function storeEvent(EventInterface $event, $granularity = Event::BAT_HOURLY) {
     $stored = TRUE;
     $transaction = db_transaction();
 
@@ -118,7 +119,7 @@ class DrupalDBStore extends SqlDBStore {
           }
         }
 
-        //If we have minutes write minutes
+        // If we have minutes write minutes
         foreach ($itemized[Event::BAT_MINUTE] as $year => $months) {
           foreach ($months as $month => $days) {
             foreach ($days as $day => $hours) {

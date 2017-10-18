@@ -26,9 +26,9 @@ class ConstraintManager {
    */
   public function getConstraints($constraint_class = NULL) {
     if ($constraint_class == NULL) {
-      return $this->constraint;
+      return $this->constraints;
     } else {
-      return $this->constraint[$constraint_class];
+      return $this->constraints[$constraint_class];
     }
   }
 

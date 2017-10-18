@@ -7,7 +7,7 @@
 
 namespace Roomify\Bat\Store;
 
-use Roomify\Bat\Event\Event;
+use Roomify\Bat\Event\EventInterface;
 
 /**
  * A store is a place where event data is held. The purpose of separating these
@@ -35,5 +35,6 @@ interface StoreInterface {
    *
    * @return boolean
    */
-  public function storeEvent(Event $event, $granularity);
+  public function storeEvent(EventInterface $event, $granularity);
+
 }
