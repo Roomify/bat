@@ -7,6 +7,7 @@
 
 namespace Roomify\Bat\Store;
 
+use Roomify\Bat\Event\EventInterface;
 use Roomify\Bat\Event\Event;
 use Roomify\Bat\Event\EventItemizer;
 use Roomify\Bat\Store\SqlDBStore;
@@ -78,12 +79,12 @@ class SqlLiteDBStore extends SqlDBStore {
   }
 
   /**
-   * @param \Roomify\Bat\Event\Event $event
+   * @param \Roomify\Bat\Event\EventInterface $event
    * @param $granularity
    *
    * @return bool
    */
-  public function storeEvent(Event $event, $granularity = Event::BAT_HOURLY) {
+  public function storeEvent(EventInterface $event, $granularity = Event::BAT_HOURLY) {
     $stored = TRUE;
 
     // Get existing event data from db

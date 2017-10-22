@@ -216,7 +216,7 @@ class EventItemizer {
 
     if ($this->event->isSameDay()) {
       if (!($this->event->getStartDate()->format('H:i') == '00:00' && $this->event->getEndDate()->format('H:i') == '23:59')) {
-        $itemized_same_day = $this->createHourlyGranular($start_date, $end_date->add(new \DateInterval('PT1M')), $interval, $start_date);
+        $itemized_same_day = $this->createHourlyGranular($start_date, $end_date->add(new \DateInterval('PT1M')), $interval);
         $itemized[EventItemizer::BAT_DAY][$sy][$sm]['d' . $sd] = -1;
         $itemized[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_same_day[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd];
         $itemized[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_same_day[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd];
@@ -225,7 +225,7 @@ class EventItemizer {
     else {
       // Deal with the start day unless it starts on midnight precisely at which point the whole day is booked
       if (!($this->event->getStartDate()->format('H:i') == '00:00')) {
-        $itemized_start = $this->createHourlyGranular($start_date, new \DateTime($start_date->format("Y-n-j 23:59:59")), $interval, $start_date);
+        $itemized_start = $this->createHourlyGranular($start_date, new \DateTime($start_date->format("Y-n-j 23:59:59")), $interval);
         $itemized[EventItemizer::BAT_DAY][$sy][$sm]['d' . $sd] = -1;
         $itemized[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd] = $itemized_start[EventItemizer::BAT_HOUR][$sy][$sm]['d' . $sd];
         $itemized[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd] = $itemized_start[EventItemizer::BAT_MINUTE][$sy][$sm]['d' . $sd];
@@ -242,7 +242,7 @@ class EventItemizer {
         $itemized[EventItemizer::BAT_MINUTE][$ey][$em]['d' . $ed] = array();
       }
       else {
-        $itemized_end = $this->createHourlyGranular(new \DateTime($end_date->format("Y-n-j 00:00:00")), $end_date->add(new \DateInterval('PT1M')), $interval, new \DateTime($end_date->format("Y-n-j 00:00:00")));
+        $itemized_end = $this->createHourlyGranular(new \DateTime($end_date->format("Y-n-j 00:00:00")), $end_date->add(new \DateInterval('PT1M')), $interval);
         $itemized[EventItemizer::BAT_DAY][$ey][$em]['d' . $ed] = -1;
         $itemized[EventItemizer::BAT_HOUR][$ey][$em]['d' . $ed] = $itemized_end[EventItemizer::BAT_HOUR][$ey][$em]['d' . $ed];
         $itemized[EventItemizer::BAT_MINUTE][$ey][$em]['d' . $ed] = $itemized_end[EventItemizer::BAT_MINUTE][$ey][$em]['d' . $ed];
@@ -259,28 +259,31 @@ class EventItemizer {
    * @param \DateTime $start_date
    * @param \DateTime $end_date
    * @param \DateInterval $interval
-   * @param \DateTime $period_start
    * @return array
    */
-  public function createHourlyGranular(\DateTime $start_date, \DateTime $end_date, \DateInterval $interval, \DateTime $period_start) {
+  public function createHourlyGranular(\DateTime $start_date, \DateTime $end_date, \DateInterval $interval) {
     $period = new \DatePeriod($start_date, $interval, $end_date);
 
     $itemized = array();
 
-    $start_minute = (int)$period_start->format('i');
-    $init = TRUE;
+    $start_minute = (int)$start_date->format('i');
 
     $event_value = $this->event->getValue();
 
+    $year = $start_date->format('Y');
+    $month = $start_date->format('n');
+    $day = $start_date->format('j');
+    $hour = $start_date->format('G');
+    $min = $start_date->format('i');
+
     foreach ($period as $minute) {
-      if ($init) {
+      // Re-calculate if we're at a day boundary.
+      if ($hour == 24) {
         $year = $minute->format('Y');
         $month = $minute->format('n');
         $day = $minute->format('j');
         $hour = $minute->format('G');
         $min = $minute->format('i');
-
-        $init = FALSE;
       }
 
       // Doing minutes so set the values in the minute array
@@ -302,11 +305,6 @@ class EventItemizer {
         $min = 0;
         $hour++;
         $start_minute = 0;
-      }
-
-      if ($hour == 24) {
-        // Re-calculate if we're at a day boundary.
-        $init = TRUE;
       }
 
       $min = str_pad($min, 2, 0, STR_PAD_LEFT);

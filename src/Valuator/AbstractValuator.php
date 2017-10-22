@@ -76,10 +76,9 @@ abstract class AbstractValuator implements ValuatorInterface {
   }
 
   /**
-   * @param \DateTime $end_date
    * @return \DateTime
    */
-  public function getEndDate(\DateTime $end_date) {
+  public function getEndDate() {
     return $this->end_date;
   }
 

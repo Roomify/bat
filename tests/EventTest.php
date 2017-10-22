@@ -554,4 +554,24 @@ class EventTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($itemized[Event::BAT_DAY]['2016']['3']['d1'], '5');
   }
 
+  public function testCreateHourlyGranular() {
+    $event_state = 5;
+    $start_date = new \DateTime('2016-01-30 12:12');
+    $end_date = new \DateTime('2016-02-02 12:12');
+    $unit = new Unit(1, 2, array());
+
+    $event = new Event($start_date, $end_date, $unit, $event_state);
+
+    $itemizer = new EventItemizer($event);
+    $itemized = $itemizer->createHourlyGranular($start_date, $end_date, new \DateInterval('PT1M'));
+
+    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['1']['d30']['h12'], '-1');
+
+    $this->assertEquals($itemized[Event::BAT_MINUTE]['2016']['1']['d30']['h12']['m12'], '5');
+
+    $this->assertEquals($itemized[Event::BAT_HOUR]['2016']['2']['d2']['h12'], '-1');
+
+    $this->assertEquals($itemized[Event::BAT_MINUTE]['2016']['2']['d2']['h12']['m11'], '5');
+  }
+
 }

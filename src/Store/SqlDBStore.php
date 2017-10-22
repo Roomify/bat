@@ -113,7 +113,7 @@ abstract class SqlDBStore extends Store {
     $queries[Event::BAT_MINUTE] = 'SELECT * FROM ' . $this->minute_table . ' WHERE ';
 
     // Create a mock event which we will use to determine how to query the database
-    $mock_event = new Event($start_date, $end_date, new Unit(0, 0, NULL), -10);
+    $mock_event = new Event($start_date, $end_date, new Unit(0, 0, array()), -10);
     // We don't need a granular event even if we are retrieving granular data - since we don't
     // know what the event break-down is going to be we need to get the full range of data from
     // days, hours and minutes.
