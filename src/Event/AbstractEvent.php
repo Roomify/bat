@@ -62,7 +62,7 @@ abstract class AbstractEvent implements EventInterface {
    * @return int
    */
   public function getValue() {
-    return (int) $this->value;
+    return intval(is_float($this->value) ? round($this->value) : $this->value);
   }
 
   /**
