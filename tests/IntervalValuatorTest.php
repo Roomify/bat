@@ -20,6 +20,7 @@ class IntervalValuatorTest extends \PHPUnit_Framework_TestCase {
   protected $u1;
   protected $u2;
   protected $u3;
+  protected $u4;
 
   protected $pdo = NULL;
 
@@ -35,6 +36,9 @@ class IntervalValuatorTest extends \PHPUnit_Framework_TestCase {
     $this->u1 = new Unit(1, 2, array());
     $this->u2 = new Unit(2, 4, array());
     $this->u3 = new Unit(3, 6, array());
+
+    $amount = 66.99 * pow( 10, 2 ); // 6699.9
+    $this->u4 = new Unit(4, $amount, array());
 
     $this->e1 = new Event($sd1, $ed1, $this->u1, $es1);
     $this->e2 = new Event ($sd2, $ed2, $this->u1, $es2);
@@ -59,6 +63,13 @@ class IntervalValuatorTest extends \PHPUnit_Framework_TestCase {
     $calendar = new Calendar(array($this->u1, $this->u2, $this->u3), $store);
 
     $calendar->addEvents(array($this->e1, $this->e2), Event::BAT_HOURLY);
+
+    // Interval: 1 days
+    // Duration: 1 day
+    // Value: 6699 * 1
+    $valuator = new IntervalValuator(new \DateTime('2018-01-20 00:00'), new \DateTime('2018-01-20 23:59'), $this->u4, $store, new \DateInterval('P1D'));
+    $value = $valuator->determineValue();
+    $this->assertSame($value, 6699.0);
 
     // Interval: 11 days
     // Duration: 1 day
