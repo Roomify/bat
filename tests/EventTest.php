@@ -301,6 +301,16 @@ class EventTest extends \PHPUnit_Framework_TestCase {
 
   }
 
+  public function testEventSpansMonthBoundary() {
+    // Event starts in January.
+    $this->event->setStartDate(new \DateTime('2020-01-31 23:13'));
+    $this->assertEquals($this->event->getStartDate()->format('Y-m-d H:i'), '2020-01-31 23:13');
+
+    // Event ends in February.
+    $this->event->setEndDate(new \DateTime('2020-02-01 02:02'));
+    $this->assertEquals($this->event->getEndDate()->format('Y-m-d H:i'), '2020-02-01 02:02');
+  }
+
   public function testEventItemizeEventDifferentDays() {
 
     $itemized = $this->event->itemize(new EventItemizer($this->event));
