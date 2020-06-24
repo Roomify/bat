@@ -1,7 +1,7 @@
 {
   "name": "roomify/bat",
   "description": "A booking and availability management library",
-  "type": "Library",
+  "type": "library",
   "keywords": [
     "roomify",
     "bat",
