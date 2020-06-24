@@ -33,7 +33,11 @@ class DrupalDBStore extends SqlDBStore {
     $results = array();
     // Run each query and store results
     foreach ($queries as $type => $query) {
-      $results[$type] = db_query($query);
+      if (class_exists('Drupal') && floatval(\Drupal::VERSION) >= 9) {
+        $results[$type] = \Drupal\Core\Database\Database::getConnection()->query($query);
+      } else {
+        $results[$type] = db_query($query);
+      }
     }
 
     $db_events = array();
@@ -78,7 +82,11 @@ class DrupalDBStore extends SqlDBStore {
    */
   public function storeEvent(EventInterface $event, $granularity = Event::BAT_HOURLY) {
     $stored = TRUE;
-    $transaction = db_transaction();
+    if (class_exists('Drupal') && floatval(\Drupal::VERSION) >= 9) {
+      $transaction = \Drupal\Core\Database\Database::getConnection()->startTransaction();
+    } else {
+      $transaction = db_transaction();
+    }
 
     try {
       // Itemize an event so we can save it
@@ -87,14 +95,25 @@ class DrupalDBStore extends SqlDBStore {
       //Write days
       foreach ($itemized[Event::BAT_DAY] as $year => $months) {
         foreach ($months as $month => $days) {
-          db_merge($this->day_table_no_prefix)
-            ->key(array(
-              'unit_id' => $event->getUnitId(),
-              'year' => $year,
-              'month' => $month
-            ))
-            ->fields($days)
-            ->execute();
+          if (class_exists('Drupal') && floatval(\Drupal::VERSION) >= 9) {
+            \Drupal\Core\Database\Database::getConnection()->merge($this->day_table_no_prefix)
+              ->key(array(
+                'unit_id' => $event->getUnitId(),
+                'year' => $year,
+                'month' => $month
+              ))
+              ->fields($days)
+              ->execute();
+          } else {
+            db_merge($this->day_table_no_prefix)
+              ->key(array(
+                'unit_id' => $event->getUnitId(),
+                'year' => $year,
+                'month' => $month
+              ))
+              ->fields($days)
+              ->execute();
+          }
         }
       }
 
@@ -105,15 +124,27 @@ class DrupalDBStore extends SqlDBStore {
             foreach ($days as $day => $hours) {
               // Count required as we may receive empty hours for granular events that start and end on midnight
               if (count($hours) > 0) {
-                db_merge($this->hour_table_no_prefix)
-                  ->key(array(
-                    'unit_id' => $event->getUnitId(),
-                    'year' => $year,
-                    'month' => $month,
-                    'day' => substr($day, 1)
-                  ))
-                  ->fields($hours)
-                  ->execute();
+                if (class_exists('Drupal') && floatval(\Drupal::VERSION) >= 9) {
+                  \Drupal\Core\Database\Database::getConnection()->merge($this->hour_table_no_prefix)
+                    ->key(array(
+                      'unit_id' => $event->getUnitId(),
+                      'year' => $year,
+                      'month' => $month,
+                      'day' => substr($day, 1)
+                    ))
+                    ->fields($hours)
+                    ->execute();
+                } else {
+                  db_merge($this->hour_table_no_prefix)
+                    ->key(array(
+                      'unit_id' => $event->getUnitId(),
+                      'year' => $year,
+                      'month' => $month,
+                      'day' => substr($day, 1)
+                    ))
+                    ->fields($hours)
+                    ->execute();
+                }
               }
             }
           }
@@ -124,16 +155,29 @@ class DrupalDBStore extends SqlDBStore {
           foreach ($months as $month => $days) {
             foreach ($days as $day => $hours) {
               foreach ($hours as $hour => $minutes) {
-                db_merge($this->minute_table_no_prefix)
-                  ->key(array(
-                    'unit_id' => $event->getUnitId(),
-                    'year' => $year,
-                    'month' => $month,
-                    'day' => substr($day, 1),
-                    'hour' => substr($hour, 1)
-                  ))
-                  ->fields($minutes)
-                  ->execute();
+                if (class_exists('Drupal') && floatval(\Drupal::VERSION) >= 9) {
+                  \Drupal\Core\Database\Database::getConnection()->merge($this->minute_table_no_prefix)
+                    ->key(array(
+                      'unit_id' => $event->getUnitId(),
+                      'year' => $year,
+                      'month' => $month,
+                      'day' => substr($day, 1),
+                      'hour' => substr($hour, 1)
+                    ))
+                    ->fields($minutes)
+                    ->execute();
+                } else {
+                  db_merge($this->minute_table_no_prefix)
+                    ->key(array(
+                      'unit_id' => $event->getUnitId(),
+                      'year' => $year,
+                      'month' => $month,
+                      'day' => substr($day, 1),
+                      'hour' => substr($hour, 1)
+                    ))
+                    ->fields($minutes)
+                    ->execute();
+                }
               }
             }
           }
