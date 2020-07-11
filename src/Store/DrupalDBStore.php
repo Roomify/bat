@@ -88,6 +88,9 @@ class DrupalDBStore extends SqlDBStore {
       $transaction = db_transaction();
     }
 
+    // Get existing event data from db
+    $existing_events = $this->getEventData($event->getStartDate(), $event->getEndDate(), array($event->getUnitId()));
+
     try {
       // Itemize an event so we can save it
       $itemized = $event->itemize(new EventItemizer($event, $granularity));
@@ -95,6 +98,11 @@ class DrupalDBStore extends SqlDBStore {
       //Write days
       foreach ($itemized[Event::BAT_DAY] as $year => $months) {
         foreach ($months as $month => $days) {
+          if ($granularity === Event::BAT_HOURLY) {
+            foreach ($days as $day => $value) {
+              $this->itemizeSplitDay($existing_events, $itemized, $value, $event->getUnitId(), $year, $month, $day);
+            }
+          }
           if (class_exists('Drupal') && floatval(\Drupal::VERSION) >= 9) {
             \Drupal\Core\Database\Database::getConnection()->merge($this->day_table_no_prefix)
               ->key(array(
@@ -124,6 +132,9 @@ class DrupalDBStore extends SqlDBStore {
             foreach ($days as $day => $hours) {
               // Count required as we may receive empty hours for granular events that start and end on midnight
               if (count($hours) > 0) {
+                foreach ($hours as $hour => $value){
+                  $this->itemizeSplitHour($existing_events, $itemized, $value, $event->getUnitId(), $year, $month, $day, $hour);
+                }
                 if (class_exists('Drupal') && floatval(\Drupal::VERSION) >= 9) {
                   \Drupal\Core\Database\Database::getConnection()->merge($this->hour_table_no_prefix)
                     ->key(array(

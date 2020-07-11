@@ -23,7 +23,7 @@ interface CalendarInterface {
    * @param $end_date
    * The end date of our range
    *
-   * @return EventInterface[]
+   * @return \Roomify\Bat\Event\EventInterface[]
    * An array of Event objects
    */
   public function getEvents(\DateTime $start_date, \DateTime $end_date);
@@ -31,10 +31,10 @@ interface CalendarInterface {
   /**
    * Given an array of Events the calendar is updated with the relevant data.
    *
-   * @param EventInterface[] $events
+   * @param \Roomify\Bat\Event\EventInterface[] $events
    *   An array of events to update the calendar with
    *
-   * @param granularity
+   * @param $granularity
    *  The leverl of detail (one of HOURLY, DAILY) at which to store the event
    */
   public function addEvents($events, $granularity);
