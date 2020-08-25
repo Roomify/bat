@@ -10,6 +10,7 @@ namespace Roomify\Bat\Event;
 use Roomify\Bat\Event\EventInterface;
 use Roomify\Bat\Store\Store;
 use Roomify\Bat\EventFormatter\EventFormatter;
+use Roomify\Bat\Store\StoreInterface;
 
 abstract class AbstractEvent implements EventInterface {
 
@@ -466,12 +467,12 @@ abstract class AbstractEvent implements EventInterface {
   /**
    * Saves an event using the Store object
    *
-   * @param Store $store
+   * @param StoreInterface $store
    * @param string $granularity
    *
    * @return boolean
    */
-  public function saveEvent(Store $store, $granularity = AbstractEvent::BAT_HOURLY) {
+  public function saveEvent(StoreInterface $store, $granularity = AbstractEvent::BAT_HOURLY) {
     return $store->storeEvent($this, $granularity);
   }
 

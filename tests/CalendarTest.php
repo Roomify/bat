@@ -891,4 +891,41 @@ class CalendarTest extends TestCase {
     $this->assertEquals($events[1][1]->getValue(), 11);
   }
 
+  public function testPartialOverlap() {
+    $u1 = new Unit(1, 0, array());
+    $units = array($u1);
+    $store = new SqlLiteDBStore($this->pdo, 'availability_event', SqlDBStore::BAT_STATE);
+    $calendar = new Calendar($units, $store);
+
+    $sd = new \DateTime('2020-07-12 00:00');
+    $ed = new \DateTime('2020-07-13 23:59');
+    // Base event to be split.
+    $sd1 = new \DateTime('2020-07-12 00:00');
+    $ed1 = new \DateTime('2020-07-13 23:59');
+    $e1s11 = new Event($sd1, $ed1, $u1, 11);
+    // Splits an existing day.
+    $sd2 = new \DateTime('2020-07-12 01:00');
+    $ed2 = new \DateTime('2020-07-12 03:00');
+    $e2s22 = new Event($sd2, $ed2, $u1, 22);
+    // Splits an existing hour when day is already split.
+    $sd3 = new \DateTime('2020-07-12 04:20');
+    $ed3 = new \DateTime('2020-07-12 04:25');
+    $e3s33 = new Event($sd3, $ed3, $u1, 33);
+    // Splits an hour in an existing day not previously split.
+    $sd4 = new \DateTime('2020-07-13 04:20');
+    $ed4 = new \DateTime('2020-07-13 04:25');
+    $e4s44 = new Event($sd4, $ed4, $u1, 44);
+
+    $calendar->addEvents(array($e1s11, $e2s22, $e3s33, $e4s44), Event::BAT_HOURLY);
+    $events = $calendar->getEvents($sd, $ed);
+
+    $this->assertEquals(11, $events[1][0]->getValue());
+    $this->assertEquals(22, $events[1][1]->getValue());
+    $this->assertEquals(11, $events[1][2]->getValue());
+    $this->assertEquals(33, $events[1][3]->getValue());
+    $this->assertEquals(11, $events[1][4]->getValue());
+    $this->assertEquals(44, $events[1][5]->getValue());
+    $this->assertEquals(11, $events[1][4]->getValue());
+  }
+
 }

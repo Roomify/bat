@@ -30,7 +30,7 @@ abstract class AbstractCalendar implements CalendarInterface {
   /**
    * The class that will access the actual event store where event data is held.
    *
-   * @var
+   * @var \Roomify\Bat\Store\StoreInterface
    */
   protected $store;
 
