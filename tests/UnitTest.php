@@ -2,9 +2,11 @@
 
 namespace Roomify\Bat\Test;
 
+use PHPUnit\Framework\TestCase;
+
 use Roomify\Bat\Unit\Unit;
 
-class UnitTest extends \PHPUnit_Framework_TestCase {
+class UnitTest extends TestCase {
 
   private $unit;
 

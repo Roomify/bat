@@ -2,6 +2,8 @@
 
 namespace Roomify\Bat\Test;
 
+use PHPUnit\Framework\TestCase;
+
 use Roomify\Bat\Store\Store;
 use Roomify\Bat\Store\SqlLiteDBStore;
 use Roomify\Bat\Unit\Unit;
@@ -11,8 +13,7 @@ use Roomify\Bat\Valuator\IntervalValuator;
 
 use Roomify\Bat\Test\SetupStore;
 
-
-class IntervalValuatorTest extends \PHPUnit_Framework_TestCase {
+class IntervalValuatorTest extends TestCase {
 
   protected $e1;
   protected $e2;

@@ -2,12 +2,14 @@
 
 namespace Roomify\Bat\Test;
 
+use PHPUnit\Framework\TestCase;
+
 use Roomify\Bat\Unit\Unit;
 
 use Roomify\Bat\Event\Event;
 use Roomify\Bat\Event\EventItemizer;
 
-class EventTest extends \PHPUnit_Framework_TestCase {
+class EventTest extends TestCase {
 
   private $event;
 

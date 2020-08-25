@@ -212,14 +212,14 @@ abstract class AbstractEvent implements EventInterface {
   /**
    * {@inheritdoc}
    */
-  public function startHour($format = 'G') {
+  public function startHour($format = 'H') {
     return $this->start_date->format($format);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function endHour($format = 'G') {
+  public function endHour($format = 'H') {
     return $this->end_date->format($format);
   }
 

@@ -2,13 +2,15 @@
 
 namespace Roomify\Bat\Test;
 
+use PHPUnit\Framework\TestCase;
+
 use Roomify\Bat\Unit\Unit;
 use Roomify\Bat\Event\Event;
 use Roomify\Bat\Calendar\Calendar;
 use Roomify\Bat\Store\SqlDBStore;
 use Roomify\Bat\Store\SqlLiteDBStore;
 
-class CalendarTest extends \PHPUnit_Framework_TestCase {
+class CalendarTest extends TestCase {
 
   protected $pdo = NULL;
 

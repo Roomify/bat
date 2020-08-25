@@ -2,6 +2,8 @@
 
 namespace Roomify\Bat\Test;
 
+use PHPUnit\DbUnit\TestCase;
+
 use Roomify\Bat\Unit\Unit;
 
 use Roomify\Bat\Event\Event;
@@ -16,7 +18,7 @@ use Roomify\Bat\Constraint\MinMaxDaysConstraint;
 use Roomify\Bat\Constraint\CheckInDayConstraint;
 use Roomify\Bat\Constraint\DateConstraint;
 
-class ConstraintTest extends \PHPUnit_Extensions_Database_TestCase {
+class ConstraintTest extends TestCase {
 
   protected $pdo = NULL;
 

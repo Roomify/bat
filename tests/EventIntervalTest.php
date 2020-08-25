@@ -2,10 +2,11 @@
 
 namespace Roomify\Bat\Test;
 
+use PHPUnit\Framework\TestCase;
+
 use Roomify\Bat\Event\EventInterval;
 
-
-class EventIntervalTest extends \PHPUnit_Framework_TestCase {
+class EventIntervalTest extends TestCase {
 
 	public function testDivide1() {
 		$start_date = new \DateTime('2016-01-01 00:00');

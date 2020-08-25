@@ -3,7 +3,7 @@
 namespace Roomify\Bat\Test;
 
 
-class SetupStore{
+class SetupStore {
 
   /**
    * SQLLite syntax to setup a day table
