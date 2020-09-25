@@ -108,9 +108,9 @@ abstract class SqlDBStore extends Store {
   public function buildQueries(\DateTime $start_date, \DateTime $end_date, $unit_ids) {
     $queries = array();
 
-    $queries[Event::BAT_DAY] = 'SELECT * FROM ' . $this->day_table . ' WHERE ';
-    $queries[Event::BAT_HOUR] = 'SELECT * FROM ' . $this->hour_table . ' WHERE ';
-    $queries[Event::BAT_MINUTE] = 'SELECT * FROM ' . $this->minute_table . ' WHERE ';
+    $queries[Event::BAT_DAY] = 'SELECT * FROM ' . $this->day_table;
+    $queries[Event::BAT_HOUR] = 'SELECT * FROM ' . $this->hour_table;
+    $queries[Event::BAT_MINUTE] = 'SELECT * FROM ' . $this->minute_table;
 
     // Create a mock event which we will use to determine how to query the database
     $mock_event = new Event($start_date, $end_date, new Unit(0, 0, array()), -10);
@@ -138,9 +138,9 @@ abstract class SqlDBStore extends Store {
     }
 
     // Add parameters to each query
-    $queries[Event::BAT_DAY] .= $query_parameters;
-    $queries[Event::BAT_HOUR] .= $query_parameters;
-    $queries[Event::BAT_MINUTE] .= $query_parameters;
+    $queries[Event::BAT_DAY] = !empty($query_parameters) ? $queries[Event::BAT_DAY] . ' WHERE ' . $query_parameters : $queries[Event::BAT_DAY];
+    $queries[Event::BAT_HOUR] = !empty($query_parameters) ? $queries[Event::BAT_HOUR] . ' WHERE ' . $query_parameters : $queries[Event::BAT_HOUR];
+    $queries[Event::BAT_MINUTE] = !empty($query_parameters) ? $queries[Event::BAT_MINUTE] . ' WHERE ' . $query_parameters : $queries[Event::BAT_MINUTE];
 
     // Clean up and add ordering information
     $queries[Event::BAT_DAY] .= ' ORDER BY unit_id, year, month';
