@@ -124,6 +124,9 @@ class EventItemizer {
     // we are already dealing with the last day of the month
     if ($this->event->getEndDate()->format('d') != $this->event->getEndDate()->format('t')) {
       $adjusted_end_day = new \DateTime($this->event->getEndDate()->format('Y-n-t'));
+      // By default the time is set to 00:00:00, for the end day it needs to be
+      // set to 23:59:59.
+      $adjusted_end_day->setTime(23, 59, 59);
     }
     // Deal with the special case of last day of month and daily granularity where the DatePeriod will not indicate one day unless the time is slightly different
     // We add a minute to compensate
