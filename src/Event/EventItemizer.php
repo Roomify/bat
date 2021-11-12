@@ -120,47 +120,44 @@ class EventItemizer {
     // each day is safer.
     $interval = new \DateInterval('P1D');
 
-    // Set the end date to the last day of the month so that we are sure to get that last month unless
-    // we are already dealing with the last day of the month
-    if ($this->event->getEndDate()->format('d') != $this->event->getEndDate()->format('t')) {
-      $adjusted_end_day = new \DateTime($this->event->getEndDate()->format('Y-n-t'));
-      // By default the time is set to 00:00:00, for the end day it needs to be
-      // set to 23:59:59.
-      $adjusted_end_day->setTime(23, 59, 59);
-    }
+    $start_date = &$this->event->getStartDate();
+    $start_date_timezone = $start_date->getTimezone();
+    $end_date = &$this->event->getEndDate();
+    $end_date_timezone = $end_date->getTimezone();
+
     // Deal with the special case of last day of month and daily granularity where the DatePeriod will not indicate one day unless the time is slightly different
     // We add a minute to compensate
-    elseif (($this->event->getStartDate()->format('Y-m-d H:i') == $this->event->getEndDate()->format('Y-m-d H:i')) && $this->granularity == EventItemizer::BAT_DAILY) {
-      $adjusted_end_day = new \DateTime($this->event->getEndDate()->add(new \DateInterval('PT1M'))->format('Y-m-d H:i'));
+    if (($start_date->format('Y-m-d H:i') == $end_date->format('Y-m-d H:i')) && $this->granularity == EventItemizer::BAT_DAILY) {
+      $adjusted_end_day = new \DateTime($end_date->add(new \DateInterval('PT1M'), $end_date_timezone)->format('Y-m-d H:i'));
     }
     else {
-      $adjusted_end_day = new \DateTime($this->event->getEndDate()->format('Y-m-d H:i'));
+      $adjusted_end_day = new \DateTime($end_date->format('Y-m-d H:i'), $end_date_timezone);
     }
 
-    $daterange = new \DatePeriod($this->event->getStartDate(), $interval, $adjusted_end_day);
+    $daterange = new \DatePeriod($start_date, $interval, $adjusted_end_day);
 
     $itemized = array();
 
-    $old_month = $this->event->getStartDate()->format('Y-n');
+    $old_month = $start_date->format('Y-n');
 
     $start = TRUE;
 
     // Cycle through each month
     foreach ($daterange as $date) {
-
       // Check if we have
       if (($date->format('Y-n') != $old_month) || ($start)) {
 
         $year = $date->format("Y");
         $dayinterval = new \DateInterval('P1D');
+        $date_timezone = $date->getTimezone();
 
         // Handle the first month
         if ($this->event->isFirstMonth($date)) {
           // If we are in the same month the end date is the end date of the event
           if ($this->event->isSameMonth()) {
-            $dayrange = new \DatePeriod($this->event->getStartDate(), $dayinterval, new \DateTime($this->event->getEndDate()->format("Y-n-j 23:59:59")));
+            $dayrange = new \DatePeriod($start_date, $dayinterval, new \DateTime($end_date->format("Y-n-j 23:59:59"), $end_date_timezone));
           } else { // alternatively it is the last day of the start month
-            $dayrange = new \DatePeriod($this->event->getStartDate(), $dayinterval, $this->event->endMonthDate($this->event->getStartDate()));
+            $dayrange = new \DatePeriod($start_date, $dayinterval, $this->event->endMonthDate($start_date));
           }
           foreach ($dayrange as $day) {
             $itemized[EventItemizer::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->event->getValue();
@@ -169,7 +166,7 @@ class EventItemizer {
 
         // Handle the last month (will be skipped if event is same month)
         elseif ($this->event->isLastMonth($date)) {
-          $dayrange = new \DatePeriod(new \DateTime($date->format("Y-n-1")), $dayinterval, $this->event->getEndDate());
+          $dayrange = new \DatePeriod(new \DateTime($date->format("Y-n-1"), $date_timezone), $dayinterval, $end_date);
           foreach ($dayrange as $day) {
             $itemized[EventItemizer::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->event->getValue();
           }
@@ -177,7 +174,7 @@ class EventItemizer {
 
         // We are in an in-between month - just cycle through and set dates (time on end date set to ensure it is included)
         else {
-          $dayrange = new \DatePeriod(new \DateTime($date->format("Y-n-1")), $dayinterval, new \DateTime($date->format("Y-n-t 23:59:59")));
+          $dayrange = new \DatePeriod(new \DateTime($date->format("Y-n-1"), $date_timezone), $dayinterval, new \DateTime($date->format("Y-n-t 23:59:59"), $date_timezone));
           foreach ($dayrange as $day) {
             $itemized[EventItemizer::BAT_DAY][$year][$day->format('n')]['d' . $day->format('j')] = $this->event->getValue();
           }
